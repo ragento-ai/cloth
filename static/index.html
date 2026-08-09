@@ -1263,7 +1263,8 @@
                     })
                 });
                 await refreshSummary();
-                switchTab('outputs-view', document.querySelectorAll('.tab-btn')[0]);
+                const generatedTabBtn = document.querySelector('.nav-tabs .tab-btn');
+                switchTab('outputs-view', generatedTabBtn);
             } catch (err) {
                 alert("Generation error: " + err);
             } finally {
