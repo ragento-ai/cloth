@@ -150,6 +150,28 @@ def delete_moodboard_photo():
         return jsonify({"status": "SUCCESS"})
     return jsonify({"error": "File not found"}), 404
 
+import datetime
+
+def get_admin_stats():
+    """Load or initialize persistent admin statistics."""
+    stats_path = settings.OUTPUT_DIR / "admin_stats.json"
+    default_stats = {
+        "generate_click_count": 0,
+        "activity_log": []
+    }
+    if stats_path.exists():
+        try:
+            return json.loads(stats_path.read_text(encoding="utf-8"))
+        except Exception:
+            return default_stats
+    return default_stats
+
+def save_admin_stats(stats):
+    """Save persistent admin statistics."""
+    settings.OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    stats_path = settings.OUTPUT_DIR / "admin_stats.json"
+    stats_path.write_text(json.dumps(stats, indent=2), encoding="utf-8")
+
 @app.route("/api/summary", methods=["GET"])
 def get_batch_summary():
     """Returns the latest batch_execution_summary.json results."""
@@ -162,6 +184,55 @@ def get_batch_summary():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route("/api/admin/stats", methods=["GET"])
+def get_admin_analytics():
+    """Returns detailed statistics and metrics for the Admin Dashboard."""
+    admin_stats = get_admin_stats()
+    
+    # Read summary list for output metrics
+    summary_path = settings.OUTPUT_DIR / "batch_execution_summary.json"
+    summary_data = []
+    if summary_path.exists():
+        try:
+            summary_data = json.loads(summary_path.read_text(encoding="utf-8"))
+        except Exception:
+            summary_data = []
+
+    total_images_generated = len(summary_data)
+    auto_approved_count = sum(1 for item in summary_data if item.get("status") == "AUTO_APPROVED")
+    flagged_count = total_images_generated - auto_approved_count
+
+    # Resolution breakdown
+    res_counts = {"1024x1024": 0, "2048x2048": 0, "4096x4096": 0}
+    for item in summary_data:
+        res = item.get("controls", {}).get("resolution", "2048x2048")
+        res_counts[res] = res_counts.get(res, 0) + 1
+
+    # SKU and Moodboard counts
+    input_base_dir = settings.INPUT_DIR
+    sku_count = len([d for d in input_base_dir.iterdir() if d.is_dir()]) if input_base_dir.exists() else 0
+
+    moodboard_dir = settings.MOODBOARD_DIR
+    moodboard_count = len([p for p in moodboard_dir.glob("*") if allowed_file(p.name)]) if moodboard_dir.exists() else 0
+
+    return jsonify({
+        "generate_click_count": admin_stats.get("generate_click_count", 0),
+        "total_images_generated": total_images_generated,
+        "auto_approved_count": auto_approved_count,
+        "flagged_count": flagged_count,
+        "total_skus": sku_count,
+        "total_moodboards": moodboard_count,
+        "resolution_counts": res_counts,
+        "activity_log": admin_stats.get("activity_log", [])[:30]
+    })
+
+@app.route("/api/admin/reset", methods=["POST"])
+def reset_admin_analytics():
+    """Resets generation click count and activity logs."""
+    stats = {"generate_click_count": 0, "activity_log": []}
+    save_admin_stats(stats)
+    return jsonify({"status": "SUCCESS", "message": "Admin metrics reset successfully"})
+
 @app.route("/api/generate", methods=["POST"])
 def trigger_generation():
     """Triggers generation for a specific SKU with optional moodboard selections and transfer controls."""
@@ -169,6 +240,10 @@ def trigger_generation():
     target_sku = data.get("sku_id")
     requested_num_shots = int(data.get("num_shots", 3))
     selected_moodboard_filenames = data.get("moodboards", [])
+    
+    # Track admin generate click count
+    admin_stats = get_admin_stats()
+    admin_stats["generate_click_count"] = admin_stats.get("generate_click_count", 0) + 1
     
     # Parse transfer controls from request
     controls_raw = data.get("controls", {})
@@ -233,6 +308,21 @@ def trigger_generation():
     final_summary_list = new_results + existing_summary
     summary_path.write_text(json.dumps(final_summary_list, indent=2), encoding="utf-8")
     
+    # Log activity entry for admin analytics
+    log_entry = {
+        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "sku_id": target_sku or "ALL_SKUS",
+        "requested_shots": requested_num_shots,
+        "generated_shots": len(new_results),
+        "resolution": controls.resolution,
+        "custom_override": controls.custom_override,
+        "status": "SUCCESS"
+    }
+    if "activity_log" not in admin_stats or not isinstance(admin_stats["activity_log"], list):
+        admin_stats["activity_log"] = []
+    admin_stats["activity_log"].insert(0, log_entry)
+    save_admin_stats(admin_stats)
+    
     return jsonify({"status": "SUCCESS", "results": final_summary_list})
 
 # Image Static Routes
@@ -251,3 +341,4 @@ def serve_output_image(filename):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
+

@@ -4,7 +4,7 @@ Pass 1 Orchestrator: Uses Gemini 3.6 Flash to analyze product shots, group moodb
 
 import json
 import logging
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from pathlib import Path
 from PIL import Image
 
