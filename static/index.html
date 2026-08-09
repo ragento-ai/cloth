@@ -893,8 +893,14 @@
                 <button class="segment-btn" data-val="moodboard" onclick="setSegment('ctrl-bg', 'moodboard', this)">Moodboard</button>
             </div>
 
-            <!-- Output Resolution Selector -->
+            <!-- Special Creative Override Directive (Subtle) -->
             <div class="control-label" style="margin-top: 0.5rem;">
+                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">Special Creative Directives (Optional)</span>
+            </div>
+            <input type="text" id="ctrl-override" placeholder="e.g. Add flower pot in backdrop, wears gold earrings..." style="width: 100%; background: #000; border: 1px solid var(--card-border); border-radius: 6px; padding: 6px 10px; font-size: 0.75rem; color: var(--text-main); margin-bottom: 0.75rem; font-family: inherit;" onchange="transferControls.custom_override = this.value">
+
+            <!-- Output Resolution Selector -->
+            <div class="control-label" style="margin-top: 0.25rem;">
                 <span>Output Resolution</span>
             </div>
             <div class="resolution-grid" id="ctrl-res">
@@ -1380,7 +1386,8 @@
             model: 'auto',
             pose: 'auto',
             background: 'auto',
-            resolution: '2048x2048'
+            resolution: '2048x2048',
+            custom_override: ''
         };
 
         function setSegment(controlId, value, btn) {
@@ -1405,6 +1412,8 @@
             const loader = document.getElementById('loader');
             const btnText = document.getElementById('btn-text');
             const numShots = document.getElementById('shot-count').value;
+            const overrideVal = document.getElementById('ctrl-override').value;
+            transferControls.custom_override = overrideVal ? overrideVal.trim() : null;
 
             btn.disabled = true;
             loader.style.display = 'block';

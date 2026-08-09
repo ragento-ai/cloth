@@ -127,7 +127,8 @@ class PipelineManager:
                 "background": getattr(controls, 'background', 'auto') if controls else 'auto',
                 "pose": getattr(controls, 'pose', 'auto') if controls else 'auto',
                 "model": getattr(controls, 'model', 'auto') if controls else 'auto',
-                "resolution": getattr(controls, 'resolution', '2048x2048') if controls else '2048x2048'
+                "resolution": getattr(controls, 'resolution', '2048x2048') if controls else '2048x2048',
+                "custom_override": getattr(controls, 'custom_override', None) if controls else None
             }
         }
 

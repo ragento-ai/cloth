@@ -12,6 +12,7 @@ class TransferControls(BaseModel):
     pose: str = Field("auto", description="Source for pose & gesture: 'auto' (Model Decides), 'input', 'moodboard'")
     model: str = Field("auto", description="Source for model identity: 'auto' (Model Decides), 'input', 'moodboard'")
     resolution: str = Field("2048x2048", description="Target output image resolution: '1024x1024', '2048x2048', '4096x4096'")
+    custom_override: Optional[str] = Field(None, description="High-priority user directive that overrides default toggles")
 
 
 class ShotPlan(BaseModel):

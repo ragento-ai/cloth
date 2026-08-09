@@ -144,10 +144,16 @@ class PromptOrchestrator:
         bg_source = "auto"
         pose_ctrl = "auto"
         model_ctrl = "auto"
+        custom_override = None
         if controls:
             bg_source = getattr(controls, 'background', 'auto')
             pose_ctrl = getattr(controls, 'pose', 'auto')
             model_ctrl = getattr(controls, 'model', 'auto')
+            custom_override = getattr(controls, 'custom_override', None)
+
+        if custom_override and custom_override.strip():
+            override_str = custom_override.strip()
+            fidelity_rules.insert(0, f"HIGH-PRIORITY CREATIVE OVERRIDE (MUST FULFILL): {override_str}")
 
         # Model rendering spec (Only add directive if non-auto)
         model_spec = "natural_fashion_model_rendering"
@@ -169,6 +175,9 @@ class PromptOrchestrator:
             bg_spec = "replicate_background_environment_from_input_photo"
         elif bg_source == "moodboard":
             bg_spec = f"replicate_backdrop_and_lighting_from_{shot_plan.lighting_source}"
+
+        if custom_override and custom_override.strip():
+            bg_spec = f"{bg_spec} | OVERRIDE INSTRUCTION: {custom_override.strip()}"
 
         payload = JSONPromptPayload(
             task=f"D2C_apparel_model_transfer_{sku_id}_shot_{shot_plan.shot_number}",

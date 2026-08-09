@@ -176,7 +176,8 @@ def trigger_generation():
         background=controls_raw.get("background", "auto"),
         pose=controls_raw.get("pose", "auto"),
         model=controls_raw.get("model", "auto"),
-        resolution=controls_raw.get("resolution", "2048x2048")
+        resolution=controls_raw.get("resolution", "2048x2048"),
+        custom_override=controls_raw.get("custom_override", None)
     )
     
     input_base_dir = settings.INPUT_DIR
