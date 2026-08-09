@@ -5,12 +5,17 @@ Configuration settings for Mirchi Fashion Gemini Visual Generation System.
 import os
 from pathlib import Path
 from dataclasses import dataclass, field
+from dotenv import load_dotenv
+
+# Load environment variables from .env file if present
+load_dotenv()
 
 
 @dataclass
 class Settings:
     # Vertex AI Configuration
-    VERTEX_CREDENTIALS_PATH: Path = field(default_factory=lambda: Path(os.getenv("VERTEX_CREDENTIALS_PATH", "/home/amrit-lal-singh/Experimentation/cloth/vertex-cred.json")))
+    VERTEX_CREDENTIALS_BASE64: str = field(default_factory=lambda: os.getenv("VERTEX_CREDENTIALS_BASE64", ""))
+    VERTEX_CREDENTIALS_PATH: Path = field(default_factory=lambda: Path(os.getenv("VERTEX_CREDENTIALS_PATH", "vertex-cred.json")))
     VERTEX_PROJECT_ID: str = field(default_factory=lambda: os.getenv("VERTEX_PROJECT_ID", "silicon-cocoa-476407-n3"))
     VERTEX_LOCATION: str = field(default_factory=lambda: os.getenv("VERTEX_LOCATION", "global"))
 

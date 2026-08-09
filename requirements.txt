@@ -6,3 +6,4 @@ pydantic==2.13.4
 pillow==12.3.0
 requests==2.34.2
 werkzeug==3.1.8
+python-dotenv==1.0.1

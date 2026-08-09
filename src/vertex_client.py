@@ -14,13 +14,29 @@ logger = logging.getLogger(__name__)
 
 
 def get_genai_client(location: Optional[str] = None) -> genai.Client:
-    """Returns a Google GenAI Client authenticated via Vertex AI Service Account."""
+    """Returns a Google GenAI Client authenticated via Vertex AI Service Account or API key."""
 
+    cred_base64 = settings.VERTEX_CREDENTIALS_BASE64
     cred_path = settings.VERTEX_CREDENTIALS_PATH
     project_id = settings.VERTEX_PROJECT_ID
     target_location = location or settings.VERTEX_LOCATION
 
-    if cred_path.exists():
+    if cred_base64:
+        logger.info(f"Authenticating via VERTEX_CREDENTIALS_BASE64 env variable (location={target_location})")
+        import base64
+        import json
+        json_acct = json.loads(base64.b64decode(cred_base64).decode("utf-8"))
+        creds = service_account.Credentials.from_service_account_info(
+            json_acct,
+            scopes=["https://www.googleapis.com/auth/cloud-platform"]
+        )
+        return genai.Client(
+            vertexai=True,
+            project=project_id,
+            location=target_location,
+            credentials=creds
+        )
+    elif cred_path.exists():
         logger.info(f"Authenticating with Vertex AI Service Account credentials at {cred_path} (location={target_location})")
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(cred_path)
         creds = service_account.Credentials.from_service_account_file(
