@@ -4,6 +4,7 @@ Pipeline Manager: Coordinates Pass 1 Orchestration, Gemini 3.6 Flash Moodboard S
 
 import json
 import logging
+from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any
 
@@ -44,7 +45,8 @@ class PipelineManager:
         approved_dir.mkdir(parents=True, exist_ok=True)
         review_dir.mkdir(parents=True, exist_ok=True)
 
-        shot_tag = f"shot_{shot_plan.shot_number}"
+        timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:19]
+        shot_tag = f"shot_{shot_plan.shot_number}_{timestamp_str}"
         logger.info(f"--- Pipeline Execution for SKU: {sku_id} ({shot_tag}) | Pose: {shot_plan.pose_source} ---")
 
         # Step 1: Orchestrator & JSON Prompt Payload Builder
@@ -111,6 +113,7 @@ class PipelineManager:
         return {
             "sku_id": sku_id,
             "shot_number": shot_plan.shot_number,
+            "timestamp": timestamp_str,
             "framing": shot_plan.framing,
             "pose_source": shot_plan.pose_source,
             "status": status,

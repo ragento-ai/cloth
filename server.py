@@ -195,8 +195,7 @@ def trigger_generation():
         except Exception:
             existing_summary = []
 
-    summary_map = {f"{item.get('sku_id')}_{item.get('shot_number')}": item for item in existing_summary}
-    
+    new_results = []
     for garment_dir in garment_dirs:
         sku_id = garment_dir.name.replace(" ", "_")
         if target_sku and target_sku != sku_id:
@@ -217,11 +216,9 @@ def trigger_generation():
             moodboard_image_paths=moodboard_images,
             requested_num_shots=requested_num_shots
         )
-        for r in results:
-            key = f"{r.get('sku_id')}_{r.get('shot_number')}"
-            summary_map[key] = r
+        new_results.extend(results)
 
-    final_summary_list = list(summary_map.values())
+    final_summary_list = new_results + existing_summary
     summary_path.write_text(json.dumps(final_summary_list, indent=2), encoding="utf-8")
     
     return jsonify({"status": "SUCCESS", "results": final_summary_list})
