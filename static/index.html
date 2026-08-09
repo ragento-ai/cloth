@@ -1184,6 +1184,7 @@
                 const baseImgUrl = item.final_image_path ? `/api/image/output/${item.final_image_path.split('/output/')[1]}` : '';
                 const imgUrl = baseImgUrl ? `${baseImgUrl}?t=${timestamp}` : '';
                 const isApproved = item.status === 'AUTO_APPROVED';
+                const formattedTime = item.timestamp ? item.timestamp.replace(/_/g, ' ') : 'Catalog Shot';
                 
                 return `
                     <div class="asset-card">
@@ -1198,12 +1199,14 @@
                                 <span>${item.sku_id}</span>
                                 <span class="framing-tag">${item.framing || 'Full Body'}</span>
                             </div>
-                            <div class="qc-grid">
-                                <div class="qc-item"><span class="qc-label">Binary Identity:</span><span class="qc-val" style="color: ${qc.is_same_garment_or_valid_piece ? '#10b981' : '#f43f5e'}">${qc.is_same_garment_or_valid_piece ? 'PASS' : 'FAIL'}</span></div>
-                                <div class="qc-item"><span class="qc-label">Category Match:</span><span class="qc-val">${(qc.garment_type_match * 100).toFixed(0)}%</span></div>
-                                <div class="qc-item"><span class="qc-label">Base Color:</span><span class="qc-val">${(qc.base_color_fidelity * 100).toFixed(0)}%</span></div>
-                                <div class="qc-item"><span class="qc-label">QC Score:</span><span class="qc-val">${(qc.composite_quality_score * 100).toFixed(0)}%</span></div>
+                            <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 10px; font-size: 0.8rem; color: var(--text-muted);">
+                                <div><strong>Pose Reference:</strong> ${item.pose_source || 'Catalog Reference'}</div>
+                                <div><strong>Generated At:</strong> ${formattedTime}</div>
+                                <div><strong>Attempts:</strong> ${item.attempts || 1} Run</div>
                             </div>
+                            <button onclick="openOutputLightbox('${imgUrl}', '${item.sku_id}', ${JSON.stringify(item).replace(/"/g, '&quot;')})" style="margin-top: 12px; width: 100%; padding: 8px; background: rgba(0, 242, 254, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">
+                                View Full Source Details
+                            </button>
                         </div>
                     </div>
                 `;
@@ -1221,21 +1224,27 @@
 
         function openOutputLightbox(url, skuId, item) {
             const qc = item.qc_report || {};
+            const formattedTime = item.timestamp ? item.timestamp.replace(/_/g, ' ') : 'Catalog Generation';
+            
             document.getElementById('modal-img').src = url;
             document.getElementById('modal-sidebar').innerHTML = `
                 <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--accent-cyan);">${skuId} - Shot ${item.shot_number}</h3>
-                <div style="font-size: 0.85rem; color: var(--text-muted);">Framing: <strong>${item.framing}</strong></div>
-                <div style="font-size: 0.85rem; color: var(--text-muted);">Pose Ref: <strong>${item.pose_source}</strong></div>
-                <div style="font-size: 0.85rem; color: var(--text-muted);">Status: <strong style="color: ${item.status === 'AUTO_APPROVED' ? '#10b981' : '#f43f5e'}">${item.status}</strong></div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Generation Timestamp: <strong>${formattedTime}</strong></div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Pipeline Status: <strong style="color: ${item.status === 'AUTO_APPROVED' ? '#10b981' : '#f43f5e'}">${item.status}</strong></div>
                 
-                <h4 style="margin-top: 1rem; font-size: 0.95rem; text-transform: uppercase; color: var(--accent-cyan);">Quality Inspection Report</h4>
-                <div class="qc-grid" style="grid-template-columns: 1fr;">
-                    <div class="qc-item"><span class="qc-label">Binary Identity Gate:</span><span class="qc-val" style="color: ${qc.is_same_garment_or_valid_piece ? '#10b981' : '#f43f5e'}">${qc.is_same_garment_or_valid_piece ? 'PASSED' : 'FAILED'}</span></div>
-                    <div class="qc-item"><span class="qc-label">Garment Category Match:</span><span class="qc-val">${(qc.garment_type_match * 100).toFixed(0)}%</span></div>
-                    <div class="qc-item"><span class="qc-label">Base Color Palette:</span><span class="qc-val">${(qc.base_color_fidelity * 100).toFixed(0)}%</span></div>
-                    <div class="qc-item"><span class="qc-label">Pattern/Weave Confidence:</span><span class="qc-val">${(qc.pattern_match_confidence * 100).toFixed(0)}%</span></div>
-                    <div class="qc-item"><span class="qc-label">Anatomical Correctness:</span><span class="qc-val">${(qc.anatomical_correctness * 100).toFixed(0)}%</span></div>
-                    <div class="qc-item"><span class="qc-label">Cloth Drape Realism:</span><span class="qc-val">${(qc.garment_drape_realism * 100).toFixed(0)}%</span></div>
+                <h4 style="margin-top: 1.2rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-cyan); border-bottom: 1px solid var(--card-border); padding-bottom: 4px;">Input & Style Sources</h4>
+                <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px; font-size: 0.85rem; color: var(--text-main);">
+                    <div><strong>Target Garment SKU:</strong> ${skuId}</div>
+                    <div><strong>Camera Framing:</strong> ${item.framing}</div>
+                    <div><strong>Moodboard Pose Reference:</strong> <span style="color: var(--accent-blue);">${item.pose_source}</span></div>
+                    <div><strong>Pipeline Attempts:</strong> ${item.attempts || 1} Retry(s)</div>
+                </div>
+
+                <h4 style="margin-top: 1.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-purple); border-bottom: 1px solid var(--card-border); padding-bottom: 4px;">Quality Sanity Checks</h4>
+                <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px; font-size: 0.85rem;">
+                    <div><strong>Layer 1 Binary Identity:</strong> <span style="color: ${qc.is_same_garment_or_valid_piece ? '#10b981' : '#f43f5e'}; font-weight: 700;">${qc.is_same_garment_or_valid_piece ? 'PASSED (Match)' : 'FAILED'}</span></div>
+                    <div><strong>Garment Type Match:</strong> ${qc.garment_type_match === 1 ? 'Exact Match' : 'High Consistency'}</div>
+                    <div><strong>Detected Defects:</strong> ${qc.detected_defects && qc.detected_defects.length > 0 ? qc.detected_defects.join(', ') : 'None'}</div>
                 </div>
             `;
             document.getElementById('lightbox-modal').style.display = 'flex';
