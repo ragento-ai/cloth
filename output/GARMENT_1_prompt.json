@@ -1,0 +1,31 @@
+{
+  "task": "D2C_apparel_model_transfer_GARMENT_1_pose_1",
+  "garment_identity": {
+    "source_images": [
+      "42723G.jpg",
+      "42723H.jpg",
+      "42723I.jpg",
+      "42723J.jpg",
+      "42723K.jpg"
+    ],
+    "fabric_texture_anchor": "42723J.jpg",
+    "fidelity_rules": [
+      "100% fabric pattern, weave, print scale, and embroidery preservation",
+      "Zero alteration to original garment category (Saree stays Saree, Kurta stays Kurta)",
+      "Exact base color palette retention under studio lighting",
+      "Maintain original fabric drape physics and texture placement",
+      "Visual Specs: Here's the analysis of the D2C fashion garment:  1.  **Exact Garment Type:** Saree 2.  **Exact Base Fabric Color Palette:** Lilac base with Aqua Green accents. 3.  **Pattern & Weave Details:** Batik-s"
+    ]
+  },
+  "composition_spec": {
+    "pose_source": "K10043G.jpg",
+    "lighting_source": "K10043I.jpg",
+    "framing": "full_body_catalog_shot",
+    "camera_angle": "eye_level_studio"
+  },
+  "aesthetic": {
+    "style": "photorealistic_commercial_fashion",
+    "model_rendering": "natural_skin_texture_and_anatomy",
+    "background": "soft_minimalist_studio_environment"
+  }
+}

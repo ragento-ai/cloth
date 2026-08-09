@@ -1,0 +1,12 @@
+{
+  "garment_type_match": 1.0,
+  "base_color_fidelity": 1.0,
+  "pattern_match_confidence": 1.0,
+  "anatomical_correctness": 1.0,
+  "garment_drape_realism": 1.0,
+  "transformation_verification": 1.0,
+  "composite_quality_score": 1.0,
+  "pass_quality_gate": true,
+  "detected_defects": [],
+  "human_review_reason": null
+}

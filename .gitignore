@@ -1,0 +1,20 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.venv
+venv/
+
+# Environment & Credentials
+.env
+vertex-cred.json
+*.json.key
+
+# User Uploads & Raw Inputs (Do not push raw input or moodboard references)
+1  INPUT/
+3  MOODBOARD REFERENCE/
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
