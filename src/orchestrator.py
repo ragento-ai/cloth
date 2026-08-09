@@ -102,9 +102,10 @@ class PromptOrchestrator:
         product_image_paths: List[Path],
         moodboard_image_paths: List[Path],
         shot_plan: ShotPlan,
-        sku_id: str = "SKU_001"
+        sku_id: str = "SKU_001",
+        controls: Optional[Any] = None
     ) -> JSONPromptPayload:
-        """Constructs structured JSONPromptPayload object using Gemini 3.6 Flash visual analysis."""
+        """Constructs structured JSONPromptPayload object using Gemini 3.6 Flash visual analysis and selective transfer controls."""
 
         anchor_img = self.select_fabric_anchor(product_image_paths)
         product_filenames = [p.name for p in product_image_paths]
@@ -138,6 +139,37 @@ class PromptOrchestrator:
         if analysis_details:
             fidelity_rules.append(f"Visual Specs: {analysis_details[:200]}")
 
+        # Process selective transfer controls
+        # Default choices when controls are None or 'auto'
+        bg_source = "auto"
+        pose_ctrl = "auto"
+        model_ctrl = "auto"
+        if controls:
+            bg_source = getattr(controls, 'background', 'auto')
+            pose_ctrl = getattr(controls, 'pose', 'auto')
+            model_ctrl = getattr(controls, 'model', 'auto')
+
+        # Model rendering spec (Only add directive if non-auto)
+        model_spec = "natural_fashion_model_rendering"
+        if model_ctrl == "input":
+            model_spec = "match_human_model_appearance_from_input_photo"
+        elif model_ctrl == "moodboard":
+            model_spec = "adopt_model_facial_features_and_hair_from_moodboard_reference"
+
+        # Pose spec (Only add directive if non-auto)
+        pose_spec = shot_plan.pose_source
+        if pose_ctrl == "input":
+            pose_spec = "input_product_photo_pose"
+        elif pose_ctrl == "moodboard":
+            pose_spec = shot_plan.pose_source
+
+        # Background spec (Only add directive if non-auto)
+        bg_spec = "clean_fashion_studio_environment"
+        if bg_source == "input":
+            bg_spec = "replicate_background_environment_from_input_photo"
+        elif bg_source == "moodboard":
+            bg_spec = f"replicate_backdrop_and_lighting_from_{shot_plan.lighting_source}"
+
         payload = JSONPromptPayload(
             task=f"D2C_apparel_model_transfer_{sku_id}_shot_{shot_plan.shot_number}",
             garment_identity=GarmentIdentitySpec(
@@ -146,15 +178,15 @@ class PromptOrchestrator:
                 fidelity_rules=fidelity_rules
             ),
             composition_spec=CompositionSpec(
-                pose_source=shot_plan.pose_source,
+                pose_source=pose_spec,
                 lighting_source=shot_plan.lighting_source,
                 framing=shot_plan.framing,
                 camera_angle=shot_plan.camera_angle
             ),
             aesthetic=AestheticSpec(
                 style="photorealistic_commercial_fashion",
-                model_rendering="natural_skin_texture_and_anatomy",
-                background="soft_minimalist_studio_environment"
+                model_rendering=model_spec,
+                background=bg_spec
             )
         )
 

@@ -33,7 +33,8 @@ class PipelineManager:
         product_image_paths: List[Path],
         moodboard_image_paths: List[Path],
         shot_plan: ShotPlan,
-        output_dir: Path = None
+        output_dir: Path = None,
+        controls: Any = None
     ) -> Dict[str, Any]:
         """Runs complete generation, QC, and routing pipeline for a single planned shot."""
 
@@ -54,7 +55,8 @@ class PipelineManager:
             product_image_paths=product_image_paths,
             moodboard_image_paths=moodboard_image_paths,
             shot_plan=shot_plan,
-            sku_id=sku_id
+            sku_id=sku_id,
+            controls=controls
         )
         json_prompt_str = self.orchestrator.serialize_prompt(payload)
 
@@ -120,7 +122,13 @@ class PipelineManager:
             "attempts": attempt,
             "final_image_path": str(dest_img),
             "qc_report": qc_report.model_dump(),
-            "json_prompt_path": str(prompt_log_path)
+            "json_prompt_path": str(prompt_log_path),
+            "controls": {
+                "background": getattr(controls, 'background', 'auto') if controls else 'auto',
+                "pose": getattr(controls, 'pose', 'auto') if controls else 'auto',
+                "model": getattr(controls, 'model', 'auto') if controls else 'auto',
+                "resolution": getattr(controls, 'resolution', '2048x2048') if controls else '2048x2048'
+            }
         }
 
     def process_sku_multi_pose(
@@ -128,7 +136,8 @@ class PipelineManager:
         sku_id: str,
         product_image_paths: List[Path],
         moodboard_image_paths: List[Path],
-        requested_num_shots: int = 3
+        requested_num_shots: int = 3,
+        controls: Any = None
     ) -> List[Dict[str, Any]]:
         """Uses Gemini 3.6 Flash to plan N catalog shots and executes multi-pose generation."""
 
@@ -145,7 +154,8 @@ class PipelineManager:
                 sku_id=sku_id,
                 product_image_paths=product_image_paths,
                 moodboard_image_paths=moodboard_image_paths,
-                shot_plan=plan
+                shot_plan=plan,
+                controls=controls
             )
             results.append(res)
         return results

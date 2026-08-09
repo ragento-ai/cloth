@@ -11,6 +11,7 @@ from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
 from config import settings
+from models import TransferControls
 from src.pipeline import PipelineManager
 
 logging.basicConfig(
@@ -163,11 +164,20 @@ def get_batch_summary():
 
 @app.route("/api/generate", methods=["POST"])
 def trigger_generation():
-    """Triggers generation for a specific SKU with optional moodboard selections."""
+    """Triggers generation for a specific SKU with optional moodboard selections and transfer controls."""
     data = request.json or {}
     target_sku = data.get("sku_id")
     requested_num_shots = int(data.get("num_shots", 3))
     selected_moodboard_filenames = data.get("moodboards", [])
+    
+    # Parse transfer controls from request
+    controls_raw = data.get("controls", {})
+    controls = TransferControls(
+        background=controls_raw.get("background", "auto"),
+        pose=controls_raw.get("pose", "auto"),
+        model=controls_raw.get("model", "auto"),
+        resolution=controls_raw.get("resolution", "2048x2048")
+    )
     
     input_base_dir = settings.INPUT_DIR
     moodboard_dir = settings.MOODBOARD_DIR
@@ -209,12 +219,13 @@ def trigger_generation():
         if not product_images:
             continue
             
-        logger.info(f"UI Triggered Generation for SKU {sku_id} ({requested_num_shots} shots) with {len(moodboard_images)} moodboards...")
+        logger.info(f"UI Triggered Generation for SKU {sku_id} ({requested_num_shots} shots) with controls: {controls.model_dump()}...")
         results = pipeline.process_sku_multi_pose(
             sku_id=sku_id,
             product_image_paths=product_images,
             moodboard_image_paths=moodboard_images,
-            requested_num_shots=requested_num_shots
+            requested_num_shots=requested_num_shots,
+            controls=controls
         )
         new_results.extend(results)
 
