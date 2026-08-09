@@ -1177,9 +1177,12 @@
                 return;
             }
 
+            const timestamp = new Date().getTime();
+
             grid.innerHTML = data.map(item => {
                 const qc = item.qc_report || {};
-                const imgUrl = item.final_image_path ? `/api/image/output/${item.final_image_path.split('/output/')[1]}` : '';
+                const baseImgUrl = item.final_image_path ? `/api/image/output/${item.final_image_path.split('/output/')[1]}` : '';
+                const imgUrl = baseImgUrl ? `${baseImgUrl}?t=${timestamp}` : '';
                 const isApproved = item.status === 'AUTO_APPROVED';
                 
                 return `
