@@ -3,12 +3,15 @@ Flask Web Server for Ragento Visual Studio - Studio Grade AI Catalog & Workflow 
 """
 
 import os
+import io
 import json
+import hashlib
 import logging
 from pathlib import Path
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, send_file
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
+from PIL import Image, ImageOps
 
 from config import settings
 from models import TransferControls
@@ -27,6 +30,8 @@ settings.ensure_runtime_dirs()
 pipeline = None
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp'}
+THUMB_CACHE_DIR = settings.BASE_DIR / ".thumb-cache"
+THUMB_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def get_pipeline():
@@ -37,6 +42,76 @@ def get_pipeline():
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def _normalize_thumb_format(fmt: str | None) -> str:
+    normalized = (fmt or "webp").strip().lower()
+    if normalized not in {"webp", "jpeg", "png"}:
+        return "webp"
+    return normalized
+
+
+def _variant_suffix(fmt: str) -> str:
+    return "jpg" if fmt == "jpeg" else fmt
+
+
+def _thumbnail_cache_path(source_path: Path, width: int, fmt: str, quality: int) -> Path:
+    stat = source_path.stat()
+    signature = f"{source_path}:{stat.st_mtime_ns}:{stat.st_size}:{width}:{fmt}:{quality}"
+    digest = hashlib.sha1(signature.encode("utf-8")).hexdigest()
+    return THUMB_CACHE_DIR / f"{digest}.{_variant_suffix(fmt)}"
+
+
+def _generate_thumbnail(source_path: Path, width: int, fmt: str, quality: int) -> Path:
+    cached_path = _thumbnail_cache_path(source_path, width, fmt, quality)
+    if cached_path.exists():
+        return cached_path
+
+    with Image.open(source_path) as image:
+        image = ImageOps.exif_transpose(image)
+        image.thumbnail((width, width), Image.Resampling.LANCZOS)
+        save_image = image
+        save_kwargs = {"optimize": True}
+
+        if fmt == "webp":
+            if image.mode not in ("RGB", "RGBA"):
+                save_image = image.convert("RGBA" if "A" in image.getbands() else "RGB")
+            save_kwargs.update({"format": "WEBP", "quality": quality, "method": 6})
+        elif fmt == "jpeg":
+            if image.mode not in ("RGB", "L"):
+                background = Image.new("RGB", image.size, (255, 255, 255))
+                alpha = image.getchannel("A") if "A" in image.getbands() else None
+                background.paste(image.convert("RGBA"), mask=alpha)
+                save_image = background
+            elif image.mode != "RGB":
+                save_image = image.convert("RGB")
+            save_kwargs.update({"format": "JPEG", "quality": quality, "progressive": True})
+        else:
+            if image.mode not in ("RGB", "RGBA"):
+                save_image = image.convert("RGBA" if "A" in image.getbands() else "RGB")
+            save_kwargs.update({"format": "PNG"})
+
+        cached_path.parent.mkdir(parents=True, exist_ok=True)
+        save_image.save(cached_path, **save_kwargs)
+
+    return cached_path
+
+
+def _send_image_variant(source_path: Path):
+    if not source_path.exists():
+        return jsonify({"error": "Image not found"}), 404
+
+    width = request.args.get("w", type=int)
+    fmt = _normalize_thumb_format(request.args.get("fmt"))
+    quality = max(40, min(90, request.args.get("q", default=72, type=int)))
+
+    if not width or width <= 0:
+        return send_file(source_path, conditional=True)
+
+    width = max(80, min(width, 1600))
+    cached_path = _generate_thumbnail(source_path, width, fmt, quality)
+    mimetype = f"image/{fmt}"
+    return send_file(cached_path, mimetype=mimetype, conditional=True, max_age=86400)
 
 
 def _resolve_prompt_path(json_prompt_path):
@@ -466,15 +541,15 @@ def trigger_generation():
 @app.route("/api/image/input/<garment_dir>/<filename>")
 def serve_input_image(garment_dir, filename):
     folder = settings.INPUT_DIR / garment_dir
-    return send_from_directory(folder, filename)
+    return _send_image_variant(folder / filename)
 
 @app.route("/api/image/moodboard/<filename>")
 def serve_moodboard_image(filename):
-    return send_from_directory(settings.MOODBOARD_DIR, filename)
+    return _send_image_variant(settings.MOODBOARD_DIR / filename)
 
 @app.route("/api/image/output/<path:filename>")
 def serve_output_image(filename):
-    return send_from_directory(settings.OUTPUT_DIR, filename)
+    return _send_image_variant(settings.OUTPUT_DIR / filename)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)

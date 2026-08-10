@@ -2677,11 +2677,26 @@
             custom_override: ''
         };
 
-        function assetUrl(url) {
+        function assetUrl(url, params = null) {
             if (!url) return '';
-            const normalized = encodeURI(url);
-            const joiner = normalized.includes('?') ? '&' : '?';
-            return `${normalized}${joiner}v=${assetRevision}`;
+            const absolute = new URL(encodeURI(url), window.location.origin);
+            if (params) {
+                Object.entries(params).forEach(([key, value]) => {
+                    if (value !== undefined && value !== null && value !== '') {
+                        absolute.searchParams.set(key, value);
+                    }
+                });
+            }
+            absolute.searchParams.set('v', assetRevision);
+            return `${absolute.pathname}${absolute.search}`;
+        }
+
+        function cardAssetUrl(url, width = 420) {
+            return assetUrl(url, { w: width, fmt: 'webp' });
+        }
+
+        function previewAssetUrl(url, width = 960) {
+            return assetUrl(url, { w: width, fmt: 'webp' });
         }
 
         function escapeHtml(value) {
@@ -2946,9 +2961,9 @@
             return `${clean.slice(0, 4)}-${clean.slice(4, 6)}-${clean.slice(6, 8)} ${clean.slice(8, 10)}:${clean.slice(10, 12)}:${clean.slice(12, 14)}`;
         }
 
-        function getOutputImageUrl(item) {
+        function getOutputImageUrl(item, params = null) {
             if (!item.final_image_path || !item.final_image_path.includes('/output/')) return '';
-            return assetUrl(`/api/image/output/${item.final_image_path.split('/output/')[1]}`);
+            return assetUrl(`/api/image/output/${item.final_image_path.split('/output/')[1]}`, params);
         }
 
         function getFilteredOutputs() {
@@ -3229,8 +3244,8 @@
             cachedSkus.forEach(sku => {
                 const isSelected = selectedGarmentSku === sku.id;
                 html += `
-                    <div class="picker-card ${isSelected ? 'selected' : ''}" onclick="selectPickerGarment('${escapeJsString(sku.id)}')" onmouseenter="scheduleSidebarPeek(this, '${escapeJsString(assetUrl(sku.sample_image))}', '${escapeJsString(sku.id)}', '${escapeJsString(sku.name)}', 'Garment')" onmouseleave="hideSidebarPeek()">
-                        <img src="${assetUrl(sku.sample_image)}" alt="${escapeHtml(sku.name)}" loading="lazy" onerror="handleImageError(this, 'SKU')">
+                    <div class="picker-card ${isSelected ? 'selected' : ''}" onclick="selectPickerGarment('${escapeJsString(sku.id)}')" onmouseenter="scheduleSidebarPeek(this, '${escapeJsString(previewAssetUrl(sku.sample_image, 720))}', '${escapeJsString(sku.id)}', '${escapeJsString(sku.name)}', 'Garment')" onmouseleave="hideSidebarPeek()">
+                        <img src="${cardAssetUrl(sku.sample_image, 320)}" alt="${escapeHtml(sku.name)}" loading="lazy" onerror="handleImageError(this, 'SKU')">
                         <div class="thumb-fallback">SKU preview unavailable</div>
                         <div class="picker-card-label">
                             <strong>${escapeHtml(sku.id)}</strong>
@@ -3266,8 +3281,8 @@
             container.innerHTML = cachedMoodboards.map(mb => {
                 const isSelected = selectedMoodboards.has(mb.filename);
                 return `
-                    <div class="mb-chip ${isSelected ? 'selected' : ''}" onclick="toggleMoodboardChip('${escapeJsString(mb.filename)}')" onmouseenter="scheduleSidebarPeek(this, '${escapeJsString(assetUrl(mb.url))}', '${escapeJsString(stripExtension(mb.filename))}', 'Moodboard reference', 'Moodboard')" onmouseleave="hideSidebarPeek()">
-                        <img src="${assetUrl(mb.url)}" alt="${escapeHtml(mb.filename)}" loading="lazy">
+                    <div class="mb-chip ${isSelected ? 'selected' : ''}" onclick="toggleMoodboardChip('${escapeJsString(mb.filename)}')" onmouseenter="scheduleSidebarPeek(this, '${escapeJsString(previewAssetUrl(mb.url, 720))}', '${escapeJsString(stripExtension(mb.filename))}', 'Moodboard reference', 'Moodboard')" onmouseleave="hideSidebarPeek()">
+                        <img src="${cardAssetUrl(mb.url, 240)}" alt="${escapeHtml(mb.filename)}" loading="lazy">
                         <div class="mb-chip-text">${escapeHtml(mb.filename.replace(/\.[^.]+$/, ''))}</div>
                     </div>
                 `;
@@ -3295,7 +3310,7 @@
                     <div class="thumb-grid">
                         ${sku.images.map(img => `
                             <div class="thumb-card" onclick="openLightbox('${escapeJsString(assetUrl(img.url))}', '${escapeJsString(`${sku.name} - ${img.filename}`)}')">
-                                <img src="${assetUrl(img.url)}" alt="${escapeHtml(img.filename)}" loading="lazy" onerror="handleImageError(this, 'Garment')">
+                                <img src="${cardAssetUrl(img.url, 360)}" alt="${escapeHtml(img.filename)}" loading="lazy" onerror="handleImageError(this, 'Garment')">
                                 <div class="thumb-fallback">Garment preview unavailable</div>
                                 <div class="thumb-overlay">
                                     <span style="font-size:0.7rem; color:#fff;">${escapeHtml(img.filename)}</span>
@@ -3318,7 +3333,7 @@
             grid.innerHTML = cachedMoodboards.map(mb => `
                 <div class="moodboard-card">
                     <div class="moodboard-media" onclick="openLightbox('${escapeJsString(assetUrl(mb.url))}', 'Moodboard - ${escapeJsString(mb.filename)}')">
-                        <img src="${assetUrl(mb.url)}" alt="${escapeHtml(mb.filename)}" loading="lazy" onerror="handleImageError(this, 'Moodboard')">
+                        <img src="${cardAssetUrl(mb.url, 360)}" alt="${escapeHtml(mb.filename)}" loading="lazy" onerror="handleImageError(this, 'Moodboard')">
                         <div class="thumb-fallback">Moodboard preview unavailable</div>
                         <div class="thumb-overlay">
                             <span style="font-size:0.7rem; color:#fff;">${escapeHtml(mb.filename)}</span>
@@ -3340,8 +3355,8 @@
             return `
                 <div class="recipe-thumb-stack">
                     ${visibleImages.map((image, index) => `
-                        <div class="recipe-thumb-mini" onmouseenter="scheduleSidebarPeek(this, '${escapeJsString(image.url)}', '${escapeJsString(stripExtension(image.filename))}', '${escapeJsString(label)}', '${escapeJsString(label)}')" onmouseleave="hideSidebarPeek()">
-                            <img src="${image.url}" alt="${escapeHtml(image.filename)}" loading="lazy" onerror="handleImageError(this, '${escapeJsString(label)}')">
+                        <div class="recipe-thumb-mini" onmouseenter="scheduleSidebarPeek(this, '${escapeJsString(previewAssetUrl(image.url, 720))}', '${escapeJsString(stripExtension(image.filename))}', '${escapeJsString(label)}', '${escapeJsString(label)}')" onmouseleave="hideSidebarPeek()">
+                            <img src="${cardAssetUrl(image.url, 180)}" alt="${escapeHtml(image.filename)}" loading="lazy" onerror="handleImageError(this, '${escapeJsString(label)}')">
                             <div class="thumb-fallback">${escapeHtml(label)} preview unavailable</div>
                             ${index === 3 && images.length > 4 ? `<div class="recipe-thumb-more">+${images.length - 4}</div>` : ''}
                         </div>
@@ -3387,8 +3402,8 @@
             recipe.innerHTML = `
                 ${garment ? `
                     <div class="recipe-card ${targetImages.length ? 'clickable' : ''}" ${targetImages.length ? `onclick="openRecipeSourceModal('target')"` : ''}>
-                        <div class="recipe-thumb" onmouseenter="${targetImages.length ? `scheduleSidebarPeek(this, '${escapeJsString(targetImages[0].url)}', '${escapeJsString(garment.name)}', 'Target garment source', 'Target')` : ''}" onmouseleave="${targetImages.length ? 'hideSidebarPeek()' : ''}">
-                            <img src="${assetUrl(garment.sample_image)}" alt="${escapeHtml(garment.name)}" loading="lazy" onerror="handleImageError(this, 'SKU')">
+                        <div class="recipe-thumb" onmouseenter="${targetImages.length ? `scheduleSidebarPeek(this, '${escapeJsString(previewAssetUrl(targetImages[0].url, 960))}', '${escapeJsString(garment.name)}', 'Target garment source', 'Target')` : ''}" onmouseleave="${targetImages.length ? 'hideSidebarPeek()' : ''}">
+                            <img src="${cardAssetUrl(garment.sample_image, 320)}" alt="${escapeHtml(garment.name)}" loading="lazy" onerror="handleImageError(this, 'SKU')">
                             <div class="thumb-fallback">SKU preview unavailable</div>
                         </div>
                         <div class="recipe-meta">
@@ -3415,8 +3430,8 @@
                         ${referenceImages.length > 1
                             ? buildRecipeThumbStack(referenceImages, 'Moodboard')
                             : `
-                                <div class="recipe-thumb" onmouseenter="scheduleSidebarPeek(this, '${escapeJsString(referenceImages[0].url)}', '${escapeJsString(stripExtension(referenceImages[0].filename))}', 'Visual direction reference', 'Moodboard')" onmouseleave="hideSidebarPeek()">
-                                    <img src="${referenceImages[0].url}" alt="${escapeHtml(referenceImages[0].filename)}" loading="lazy" onerror="handleImageError(this, 'Moodboard')">
+                                <div class="recipe-thumb" onmouseenter="scheduleSidebarPeek(this, '${escapeJsString(previewAssetUrl(referenceImages[0].url, 960))}', '${escapeJsString(stripExtension(referenceImages[0].filename))}', 'Visual direction reference', 'Moodboard')" onmouseleave="hideSidebarPeek()">
+                                    <img src="${cardAssetUrl(referenceImages[0].url, 320)}" alt="${escapeHtml(referenceImages[0].filename)}" loading="lazy" onerror="handleImageError(this, 'Moodboard')">
                                     <div class="thumb-fallback">Moodboard preview unavailable</div>
                                 </div>
                             `
@@ -3432,8 +3447,8 @@
                     </div>
                 ` : selectedMoodboard ? `
                     <div class="recipe-card clickable" onclick="openRecipeSourceModal('reference')">
-                        <div class="recipe-thumb" onmouseenter="scheduleSidebarPeek(this, '${escapeJsString(assetUrl(selectedMoodboard.url))}', '${escapeJsString(stripExtension(selectedMoodboard.filename))}', 'Visual direction reference', 'Moodboard')" onmouseleave="hideSidebarPeek()">
-                            <img src="${assetUrl(selectedMoodboard.url)}" alt="${escapeHtml(selectedMoodboard.filename)}" loading="lazy" onerror="handleImageError(this, 'Moodboard')">
+                        <div class="recipe-thumb" onmouseenter="scheduleSidebarPeek(this, '${escapeJsString(previewAssetUrl(selectedMoodboard.url, 960))}', '${escapeJsString(stripExtension(selectedMoodboard.filename))}', 'Visual direction reference', 'Moodboard')" onmouseleave="hideSidebarPeek()">
+                            <img src="${cardAssetUrl(selectedMoodboard.url, 320)}" alt="${escapeHtml(selectedMoodboard.filename)}" loading="lazy" onerror="handleImageError(this, 'Moodboard')">
                             <div class="thumb-fallback">Moodboard preview unavailable</div>
                         </div>
                         <div class="recipe-meta">
@@ -3461,11 +3476,12 @@
 
         function buildResultCard(item, index) {
             const imgUrl = getOutputImageUrl(item);
+            const previewUrl = getOutputImageUrl(item, { w: 640, fmt: 'webp' });
             const itemPayload = serializeItem(item);
             return `
                 <div class="result-card">
                     <div class="result-card-media" onclick="openOutputLightbox('${escapeJsString(imgUrl)}', '${escapeJsString(item.sku_id)}', ${itemPayload})">
-                        <img src="${imgUrl}" alt="${escapeHtml(item.sku_id)}" loading="lazy" onerror="handleImageError(this, 'Output')">
+                        <img src="${previewUrl}" alt="${escapeHtml(item.sku_id)}" loading="lazy" onerror="handleImageError(this, 'Output')">
                         <div class="thumb-fallback">Generated preview unavailable</div>
                         <div class="variation-badge">Variation ${index + 1}</div>
                         <div class="badge-status ${item.status === 'AUTO_APPROVED' ? 'status-APPROVED' : 'status-FLAGGED'}">
@@ -3612,7 +3628,7 @@
                 return `
                     <div class="batch-pill ${group.id === activeBatchId ? 'active' : ''}" onclick="selectBatch('${escapeJsString(group.id)}')">
                         <div class="batch-pill-thumb">
-                            <img src="${preview}" alt="${escapeHtml(group.label)}" loading="lazy" onerror="handleImageError(this, 'Batch')">
+                            <img src="${getOutputImageUrl(group.items[0], { w: 320, fmt: 'webp' })}" alt="${escapeHtml(group.label)}" loading="lazy" onerror="handleImageError(this, 'Batch')">
                             <div class="thumb-fallback">Batch preview unavailable</div>
                         </div>
                         <div class="batch-pill-meta">
@@ -3740,7 +3756,7 @@
                     <div class="modal-source-grid">
                         ${images.map((image, index) => `
                             <div class="modal-source-thumb ${modalState.preview?.kind === kind && modalState.preview?.index === index ? 'active' : ''}" onclick="selectModalPreview('${kind}', ${index})">
-                                <img src="${image.url}" alt="${escapeHtml(image.filename)}" loading="lazy" onerror="handleImageError(this, '${escapeJsString(title)}')">
+                                <img src="${cardAssetUrl(image.url, 220)}" alt="${escapeHtml(image.filename)}" loading="lazy" onerror="handleImageError(this, '${escapeJsString(title)}')">
                                 <div class="thumb-fallback">${escapeHtml(title)} unavailable</div>
                                 <span>${escapeHtml(stripExtension(image.filename))}</span>
                             </div>
