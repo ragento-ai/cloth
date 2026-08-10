@@ -64,9 +64,9 @@ pip install -r requirements.txt
 
 ### 2. Launch Studio Web UI Dashboard
 ```bash
-python server.py
+./run.sh
 ```
-Open **`http://localhost:5000`** in your web browser to manage garment SKUs, select moodboards, and trigger catalog generation runs.
+This starts the app on **`http://localhost:5000`** with Flask auto-reload enabled, creates missing asset folders, checks for `vertex-cred.json`, and installs dependencies into `venv` when needed.
 
 ### 3. Run via CLI (Optional)
 ```bash

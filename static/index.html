@@ -37,6 +37,57 @@
             flex-direction: column;
         }
 
+        .sidebar-hover-preview {
+            position: fixed;
+            z-index: 140;
+            width: min(380px, calc(100vw - 48px));
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(61, 81, 111, 0.72);
+            background: linear-gradient(180deg, rgba(11, 18, 31, 0.98), rgba(7, 11, 20, 0.98));
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.52);
+            opacity: 0;
+            transform: translateY(8px) scale(0.98);
+            transition: opacity 0.18s ease, transform 0.18s ease;
+            pointer-events: none;
+        }
+
+        .sidebar-hover-preview.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .sidebar-hover-preview-media {
+            aspect-ratio: 4 / 5;
+            background: #020617;
+            position: relative;
+        }
+
+        .sidebar-hover-preview-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .sidebar-hover-preview-body {
+            padding: 0.85rem 0.95rem 0.95rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.28rem;
+        }
+
+        .sidebar-hover-preview-body strong {
+            font-size: 0.88rem;
+            font-weight: 800;
+        }
+
+        .sidebar-hover-preview-body span {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
         header {
             background: rgba(17, 23, 35, 0.85);
             backdrop-filter: blur(16px);
@@ -57,14 +108,26 @@
         }
 
         .brand-badge {
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
-            color: #fff;
-            font-weight: 800;
-            padding: 0.4rem 0.9rem;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            letter-spacing: 1.5px;
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 38px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+        }
+
+        .brand-badge img {
+            display: block;
+            height: 100%;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .brand-badge.auth {
+            height: 44px;
         }
 
         h1 {
@@ -73,6 +136,18 @@
             background: linear-gradient(90deg, #fff, #cbd5e1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
         .nav-tabs {
@@ -111,6 +186,27 @@
             border: 1px solid rgba(0, 242, 254, 0.2);
         }
 
+        .header-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .header-btn.primary {
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.95), rgba(23, 205, 196, 0.9));
+            color: #031018;
+            border-color: transparent;
+        }
+
         main {
             padding: 2rem 2.5rem;
             display: grid;
@@ -120,26 +216,121 @@
         }
 
         .control-panel {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 1.75rem;
+            background:
+                radial-gradient(circle at top left, rgba(0, 242, 254, 0.12), transparent 35%),
+                linear-gradient(180deg, rgba(11, 18, 31, 0.98), rgba(7, 11, 20, 0.98));
+            border: 1px solid rgba(55, 79, 112, 0.55);
+            border-radius: 22px;
+            padding: 1rem;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1.1rem;
             height: fit-content;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 18px 42px rgba(0,0,0,0.34);
         }
 
-        .section-title {
-            font-size: 0.9rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--accent-cyan);
+        .sidebar-step {
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .sidebar-step + .sidebar-step {
+            padding-top: 0.1rem;
+        }
+
+        .sidebar-step-header {
+            display: flex;
+            flex-direction: column;
+            gap: 0.18rem;
+        }
+
+        .sidebar-step-title {
             display: flex;
             align-items: center;
+            gap: 0.55rem;
+            color: var(--accent-cyan);
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .sidebar-step-copy {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .sidebar-row-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .sidebar-upload-actions {
+            display: flex;
             gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.7rem;
+        }
+
+        .sidebar-upload-actions .btn-card-action {
+            flex: 1;
+            justify-content: center;
+            padding-inline: 0.7rem;
+            font-size: 0.74rem;
+        }
+
+        .sidebar-carousel-shell {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 18px;
+            gap: 0.45rem;
+            align-items: center;
+        }
+
+        .sidebar-carousel-viewport {
+            overflow: hidden;
+        }
+
+        .sidebar-carousel-track {
+            display: flex;
+            gap: 0.65rem;
+            overflow-x: auto;
+            scrollbar-width: none;
+            scroll-behavior: smooth;
+            padding-bottom: 0.1rem;
+        }
+
+        .sidebar-carousel-track::-webkit-scrollbar {
+            display: none;
+        }
+
+        .sidebar-carousel-arrow {
+            width: 18px;
+            height: 18px;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.55);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .sidebar-carousel-arrow:hover {
+            color: var(--text-main);
         }
 
         .form-group {
@@ -171,54 +362,23 @@
             box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.15);
         }
 
-        .btn-upload {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px dashed var(--card-border);
-            color: var(--text-main);
-            padding: 0.85rem 1rem;
-            border-radius: 12px;
-            font-family: inherit;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        /* Dropdown section styling */
-        details.dropdown-section summary::-webkit-details-marker {
-            display: none;
-        }
-        details.dropdown-section summary {
-            list-style: none;
-        }
-        details[open] .dropdown-chevron {
-            transform: rotate(180deg);
-        }
-
-        /* Interactive Visual Garment Picker Carousel in Sidebar */
         .visual-picker-grid {
             display: flex;
             gap: 0.65rem;
-            overflow-x: auto;
-            padding-bottom: 0.5rem;
-            scrollbar-width: thin;
         }
 
         .picker-card {
-            min-width: 80px;
-            width: 80px;
+            min-width: 92px;
+            width: 92px;
             aspect-ratio: 3/4;
-            border-radius: 10px;
+            border-radius: 12px;
             overflow: hidden;
-            border: 2px solid var(--card-border);
+            border: 1px solid rgba(83, 103, 132, 0.5);
             background: #000;
             position: relative;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.22s ease;
+            flex: 0 0 auto;
         }
 
         .picker-card img {
@@ -229,8 +389,7 @@
 
         .picker-card.selected {
             border-color: var(--accent-cyan);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
-            transform: scale(1.05);
+            box-shadow: 0 0 0 1px rgba(0, 242, 254, 0.2), inset 0 0 0 1px rgba(0, 242, 254, 0.08);
         }
 
         .picker-card-label {
@@ -238,90 +397,109 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0, 0, 0, 0.8);
-            font-size: 0.65rem;
-            text-align: center;
-            padding: 0.2rem;
+            background: linear-gradient(180deg, rgba(4, 10, 19, 0), rgba(4, 10, 19, 0.94));
+            font-size: 0.66rem;
+            text-align: left;
+            padding: 0.6rem 0.45rem 0.42rem;
             color: #fff;
-            truncate: ellipsis;
-            white-space: nowrap;
+            white-space: normal;
             overflow: hidden;
+            line-height: 1.15;
         }
 
-        /* Interactive Moodboard Chips Container */
+        .picker-card-label strong,
+        .picker-card-label span {
+            display: block;
+        }
+
+        .picker-card-label span {
+            color: rgba(226, 232, 240, 0.78);
+            margin-top: 0.16rem;
+            font-size: 0.58rem;
+        }
+
         .moodboard-chips-container {
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            max-height: 140px;
-            overflow-y: auto;
-            padding: 0.5rem;
-            background: rgba(7, 9, 14, 0.5);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
+            gap: 0.55rem;
         }
 
         .mb-chip {
             display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--card-border);
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(83, 103, 132, 0.48);
             color: var(--text-muted);
-            padding: 0.35rem 0.65rem;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            padding: 0;
+            border-radius: 10px;
+            font-size: 0.62rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.22s ease;
+            overflow: hidden;
+            min-width: 72px;
+            width: 72px;
+            flex: 0 0 auto;
         }
 
         .mb-chip img {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
+            width: 100%;
+            height: 94px;
+            border-radius: 0;
             object-fit: cover;
+            display: block;
         }
 
         .mb-chip.selected {
-            background: rgba(0, 242, 254, 0.15);
+            background: rgba(0, 242, 254, 0.08);
             border-color: var(--accent-cyan);
             color: var(--accent-cyan);
+            box-shadow: 0 0 0 1px rgba(0, 242, 254, 0.12);
+        }
+
+        .mb-chip-text {
+            padding: 0.34rem 0.35rem 0.38rem;
+            white-space: normal;
+            overflow: hidden;
+            text-align: left;
+            line-height: 1.22;
         }
 
         .shot-slider-container {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.85rem;
         }
 
         .shot-number {
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             font-weight: 800;
             color: var(--accent-cyan);
             min-width: 2rem;
         }
 
         .btn-generate {
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-            color: #fff;
+            background: linear-gradient(135deg, rgba(37, 244, 238, 0.96), rgba(67, 160, 255, 0.9));
+            color: #04131d;
             border: none;
-            padding: 1.1rem;
-            border-radius: 14px;
-            font-weight: 700;
-            font-size: 0.95rem;
+            padding: 0.95rem 1rem;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.88rem;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 0.6rem;
-            box-shadow: 0 6px 25px rgba(0, 242, 254, 0.25);
+            box-shadow: 0 6px 22px rgba(0, 242, 254, 0.18);
+            letter-spacing: 0.02em;
         }
 
         .btn-generate:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 242, 254, 0.4);
+            box-shadow: 0 8px 28px rgba(0, 242, 254, 0.28);
         }
 
         .btn-generate:disabled {
@@ -362,6 +540,13 @@
             gap: 1rem;
         }
 
+        .view-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+        }
+
         .view-title {
             font-size: 1.2rem;
             font-weight: 700;
@@ -397,6 +582,654 @@
             background: rgba(0, 242, 254, 0.1);
             border-color: var(--accent-cyan);
             color: var(--accent-cyan);
+        }
+
+        .workspace-shell {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .workspace-panel {
+            background: linear-gradient(180deg, rgba(17, 23, 35, 0.96), rgba(10, 15, 24, 0.98));
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 1rem;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.24);
+        }
+
+        .workspace-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.95rem;
+        }
+
+        .workspace-panel-title {
+            display: flex;
+            flex-direction: column;
+            gap: 0.18rem;
+        }
+
+        .workspace-panel-title h3 {
+            font-size: 1rem;
+            font-weight: 800;
+        }
+
+        .workspace-panel-title p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .recipe-assembly {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(220px, 280px);
+            gap: 0.8rem;
+            align-items: stretch;
+        }
+
+        .recipe-card {
+            display: grid;
+            grid-template-columns: 64px minmax(0, 1fr);
+            gap: 0.7rem;
+            align-items: center;
+            padding: 0.72rem;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent 50%), rgba(255, 255, 255, 0.03);
+            min-width: 0;
+        }
+
+        .recipe-card.clickable {
+            cursor: pointer;
+        }
+
+        .recipe-card.clickable:hover {
+            border-color: rgba(0, 242, 254, 0.32);
+            box-shadow: 0 10px 24px rgba(0, 242, 254, 0.08);
+        }
+
+        .recipe-thumb {
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #020617;
+            position: relative;
+        }
+
+        .recipe-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .recipe-thumb-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.35rem;
+            width: 64px;
+        }
+
+        .recipe-thumb-stack {
+            width: 64px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.35rem;
+        }
+
+        .recipe-thumb-mini {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #020617;
+            position: relative;
+        }
+
+        .recipe-thumb-mini img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .recipe-thumb-more {
+            position: absolute;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.7);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            font-weight: 800;
+        }
+
+        .recipe-meta {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.22rem;
+        }
+
+        .recipe-label {
+            font-size: 0.64rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            font-weight: 800;
+        }
+
+        .recipe-name {
+            font-size: 0.94rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .recipe-subtext {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+        }
+
+        .recipe-plus,
+        .recipe-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.45rem;
+            font-weight: 300;
+        }
+
+        .recipe-change-card {
+            padding: 0.75rem 0.85rem;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 0.42rem;
+        }
+
+        .recipe-change-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            font-size: 0.75rem;
+        }
+
+        .recipe-change-row span:first-child {
+            color: var(--text-muted);
+        }
+
+        .recipe-change-row span:last-child {
+            color: var(--text-main);
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .workspace-results-carousel {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .workspace-results-frame {
+            overflow: hidden;
+        }
+
+        .workspace-results-track {
+            display: flex;
+            gap: 0.85rem;
+            transition: transform 0.28s ease;
+            will-change: transform;
+        }
+
+        .workspace-result-slide {
+            flex: 0 0 calc((100% - 1.7rem) / 3);
+            min-width: 0;
+        }
+
+        .workspace-results-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .workspace-results-nav-meta {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+        }
+
+        .workspace-results-nav-actions {
+            display: flex;
+            gap: 0.55rem;
+        }
+
+        .generation-progress {
+            display: grid;
+            grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+            gap: 1rem;
+            align-items: stretch;
+        }
+
+        .generation-progress-panel,
+        .generation-preview-panel {
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.025);
+            padding: 1rem;
+        }
+
+        .generation-progress-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+        }
+
+        .generation-progress-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .generation-progress-copy h4 {
+            font-size: 0.94rem;
+            font-weight: 800;
+        }
+
+        .generation-progress-copy p {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        .generation-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .generation-step {
+            display: grid;
+            grid-template-columns: 22px minmax(0, 1fr);
+            gap: 0.65rem;
+            align-items: start;
+            padding: 0.55rem 0.65rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .generation-step-indicator {
+            width: 22px;
+            height: 22px;
+            border-radius: 999px;
+            border: 1px solid rgba(83, 103, 132, 0.72);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            margin-top: 0.05rem;
+        }
+
+        .generation-step strong {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .generation-step span {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+            line-height: 1.4;
+        }
+
+        .generation-step.done {
+            border-color: rgba(16, 185, 129, 0.25);
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .generation-step.done .generation-step-indicator {
+            border-color: rgba(16, 185, 129, 0.38);
+            color: #d1fae5;
+            background: rgba(16, 185, 129, 0.16);
+        }
+
+        .generation-step.active {
+            border-color: rgba(0, 242, 254, 0.3);
+            background: rgba(0, 242, 254, 0.08);
+        }
+
+        .generation-step.active .generation-step-indicator {
+            border-color: rgba(0, 242, 254, 0.4);
+            color: var(--accent-cyan);
+            background: rgba(0, 242, 254, 0.12);
+        }
+
+        .generation-preview-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .generation-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.85rem;
+        }
+
+        .generation-preview-card {
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .generation-preview-media {
+            aspect-ratio: 0.82;
+            background:
+                linear-gradient(120deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.96));
+            background-size: 220% 100%;
+            animation: previewPulse 2.1s ease infinite;
+        }
+
+        .generation-preview-meta {
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .generation-preview-line {
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(148, 163, 184, 0.18);
+        }
+
+        .generation-preview-line.short {
+            width: 56%;
+        }
+
+        .generation-preview-line.medium {
+            width: 72%;
+        }
+
+        .generation-preview-line.long {
+            width: 88%;
+        }
+
+        @keyframes previewPulse {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .carousel-arrow {
+            width: 38px;
+            height: 38px;
+            border-radius: 999px;
+            border: 1px solid rgba(61, 81, 111, 0.72);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .carousel-arrow:hover:not(:disabled) {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .carousel-arrow:disabled {
+            opacity: 0.38;
+            cursor: not-allowed;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .result-card-media {
+            position: relative;
+            aspect-ratio: 0.82;
+            background: #020617;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .result-card-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .variation-badge {
+            position: absolute;
+            top: 0.7rem;
+            left: 0.7rem;
+            padding: 0.26rem 0.5rem;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.85);
+            color: #fff;
+            font-size: 0.68rem;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .result-card-body {
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        .result-card-title {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .result-card-title h4 {
+            font-size: 0.86rem;
+            font-weight: 700;
+        }
+
+        .result-card-title p {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 0.18rem;
+        }
+
+        .result-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.45rem 0.7rem;
+            font-size: 0.7rem;
+        }
+
+        .result-stats div {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .result-stats strong {
+            color: var(--text-main);
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+
+        .result-actions .btn-card-action {
+            flex: 1;
+            justify-content: center;
+            padding: 0.48rem 0.6rem;
+            font-size: 0.73rem;
+        }
+
+        .batch-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.85rem;
+        }
+
+        .batch-pill {
+            display: grid;
+            grid-template-columns: 56px minmax(0, 1fr);
+            gap: 0.7rem;
+            align-items: center;
+            padding: 0.8rem;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            cursor: pointer;
+            transition: border-color 0.22s ease, transform 0.22s ease;
+        }
+
+        .batch-pill.active,
+        .batch-pill:hover {
+            border-color: rgba(0, 242, 254, 0.45);
+            transform: translateY(-2px);
+        }
+
+        .batch-pill-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #020617;
+            position: relative;
+        }
+
+        .batch-pill-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .batch-pill-meta {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.18rem;
+        }
+
+        .batch-pill-title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .batch-pill-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .batch-pill-footnote {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        .gallery-toolbar {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .view-toggle {
+            display: inline-flex;
+            gap: 0.4rem;
+            padding: 0.28rem;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .view-toggle button {
+            background: transparent;
+            color: var(--text-muted);
+            border: none;
+            border-radius: 999px;
+            padding: 0.5rem 0.95rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .view-toggle button.active {
+            background: rgba(0, 242, 254, 0.12);
+            color: var(--accent-cyan);
+        }
+
+        .gallery-groups {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+
+        .gallery-group {
+            background: linear-gradient(180deg, rgba(17, 23, 35, 0.96), rgba(10, 15, 24, 0.98));
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 1rem;
+        }
+
+        .gallery-group-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 0.9rem;
+        }
+
+        .gallery-group-header h3 {
+            font-size: 1rem;
+            font-weight: 800;
+        }
+
+        .gallery-group-header p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 0.18rem;
+        }
+
+        .gallery-group-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.9rem;
         }
 
         /* SKU Card Styling for Garment Gallery */
@@ -454,28 +1287,31 @@
 
         /* 3-State Segment Control Styles */
         .control-label {
-            font-size: 0.8rem;
+            font-size: 0.74rem;
             font-weight: 600;
             color: var(--text-main);
-            margin-bottom: 0.35rem;
+            margin-bottom: 0;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            min-width: 96px;
         }
 
         .segment-control {
             display: flex;
-            background: #000;
-            border: 1px solid var(--card-border);
+            background: rgba(5, 10, 18, 0.88);
+            border: 1px solid rgba(71, 91, 118, 0.52);
             border-radius: 8px;
             padding: 3px;
             gap: 2px;
-            margin-bottom: 0.75rem;
+            min-width: 0;
+            flex: 1;
         }
 
         .segment-btn {
             flex: 1;
-            padding: 6px 4px;
-            font-size: 0.72rem;
+            padding: 6px 6px;
+            font-size: 0.64rem;
             font-weight: 600;
             text-align: center;
             border: none;
@@ -484,6 +1320,7 @@
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
+            white-space: nowrap;
         }
 
         .segment-btn:hover {
@@ -491,94 +1328,61 @@
         }
 
         .segment-btn.active {
-            background: var(--card-border);
-            color: var(--accent-cyan);
+            background: linear-gradient(135deg, rgba(23, 205, 196, 0.22), rgba(59, 130, 246, 0.16));
+            color: #dffcff;
             font-weight: 700;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            box-shadow: none;
         }
 
         .segment-btn.active[data-val="auto"] {
-            color: var(--accent-blue);
+            color: #dffcff;
         }
 
         .resolution-grid {
             display: flex;
             gap: 6px;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0;
         }
 
         .res-btn {
             flex: 1;
-            padding: 6px 2px;
-            font-size: 0.72rem;
+            padding: 6px 4px;
+            font-size: 0.64rem;
             font-weight: 600;
             text-align: center;
-            background: #000;
-            border: 1px solid var(--card-border);
+            background: rgba(5, 10, 18, 0.88);
+            border: 1px solid rgba(71, 91, 118, 0.52);
             color: var(--text-muted);
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        /* Collapsible Advanced Settings Panel */
-        details.advanced-panel {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            overflow: hidden;
-            transition: border-color 0.3s;
-        }
-
-        details.advanced-panel[open] {
-            border-color: rgba(0, 242, 254, 0.3);
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        summary.advanced-summary {
-            padding: 0.75rem 1rem;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-main);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            user-select: none;
-            list-style: none;
-            transition: color 0.2s;
-        }
-
-        summary.advanced-summary::-webkit-details-marker {
-            display: none;
-        }
-
-        summary.advanced-summary:hover {
-            color: var(--accent-cyan);
-        }
-
-        summary.advanced-summary .chevron {
-            transition: transform 0.3s ease;
-            color: var(--text-muted);
-        }
-
-        details.advanced-panel[open] summary.advanced-summary .chevron {
-            transform: rotate(180deg);
-            color: var(--accent-cyan);
-        }
-
-        .advanced-body {
-            padding: 0 1rem 1rem 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            margin-top: 0.25rem;
-        }
-
         .res-btn.active {
             border-color: var(--accent-cyan);
-            color: var(--accent-cyan);
-            background: rgba(0, 242, 254, 0.1);
+            color: #dffcff;
+            background: linear-gradient(135deg, rgba(23, 205, 196, 0.22), rgba(59, 130, 246, 0.16));
             font-weight: 700;
+        }
+
+        .sidebar-options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .sidebar-option-row {
+            display: grid;
+            grid-template-columns: 92px minmax(0, 1fr);
+            gap: 0.65rem;
+            align-items: center;
+        }
+
+        .sidebar-launch-note {
+            font-size: 0.66rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: -0.1rem;
         }
 
         .btn-card-action.primary {
@@ -594,8 +1398,8 @@
 
         .thumb-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+            gap: 0.9rem;
         }
 
         .thumb-card {
@@ -634,6 +1438,101 @@
 
         .thumb-card:hover .thumb-overlay {
             opacity: 1;
+        }
+
+        .thumb-fallback {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            text-align: center;
+            color: var(--text-muted);
+            background:
+                radial-gradient(circle at top, rgba(56, 189, 248, 0.18), transparent 52%),
+                linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.98));
+            font-size: 0.78rem;
+            font-weight: 700;
+            line-height: 1.45;
+        }
+
+        .moodboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+            gap: 1rem;
+        }
+
+        .moodboard-card {
+            background: linear-gradient(180deg, rgba(17, 23, 35, 0.98), rgba(7, 9, 14, 0.96));
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            transition: transform 0.24s ease, border-color 0.24s ease, box-shadow 0.24s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+        }
+
+        .moodboard-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(0, 242, 254, 0.4);
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.35);
+        }
+
+        .moodboard-media {
+            position: relative;
+            aspect-ratio: 3 / 4;
+            background: #000;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .moodboard-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .moodboard-card:hover img {
+            transform: scale(1.04);
+        }
+
+        .moodboard-card-body {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.9rem;
+        }
+
+        .moodboard-card-meta {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.28rem;
+        }
+
+        .moodboard-card-title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .moodboard-card-subtitle {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .btn-delete-icon {
@@ -786,7 +1685,7 @@
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 20px;
-            max-width: 950px;
+            max-width: 1120px;
             width: 100%;
             max-height: 90vh;
             overflow: hidden;
@@ -817,6 +1716,96 @@
             gap: 1.25rem;
             border-left: 1px solid var(--card-border);
             overflow-y: auto;
+        }
+
+        .modal-source-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .modal-source-section h4 {
+            font-size: 0.84rem;
+            color: var(--accent-cyan);
+            font-weight: 800;
+        }
+
+        .modal-source-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.55rem;
+        }
+
+        .modal-source-thumb {
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            transition: border-color 0.18s ease, transform 0.18s ease;
+            position: relative;
+        }
+
+        .modal-source-thumb:hover {
+            border-color: rgba(0, 242, 254, 0.32);
+            transform: translateY(-1px);
+        }
+
+        .modal-source-thumb.active {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 1px rgba(0, 242, 254, 0.16);
+        }
+
+        .modal-source-thumb img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            display: block;
+            background: #020617;
+        }
+
+        .modal-source-thumb span {
+            display: block;
+            padding: 0.35rem 0.4rem 0.42rem;
+            font-size: 0.64rem;
+            color: var(--text-muted);
+            line-height: 1.25;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .modal-note {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        .modal-preview-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            margin-top: 0.9rem;
+            padding: 0.42rem 0.62rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            background: rgba(0, 242, 254, 0.08);
+            border: 1px solid rgba(0, 242, 254, 0.16);
+        }
+
+        .modal-back-btn {
+            margin-top: 0.6rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 0.6rem 0.75rem;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.76rem;
+            font-weight: 700;
+            cursor: pointer;
         }
 
         .modal-close {
@@ -996,6 +1985,132 @@
             }
         }
 
+        @media (max-width: 1100px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+
+            .recipe-assembly {
+                grid-template-columns: 1fr;
+            }
+
+            .generation-progress {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-group-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .recipe-plus,
+            .recipe-arrow {
+                display: none;
+            }
+
+            .workspace-result-slide {
+                flex-basis: calc((100% - 0.85rem) / 2);
+            }
+        }
+
+        @media (max-width: 700px) {
+            header {
+                padding: 1rem 1rem 0.8rem;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.9rem;
+            }
+
+            main {
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .view-header {
+                padding: 1rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.9rem;
+            }
+
+            .view-header-actions {
+                width: 100%;
+            }
+
+            .view-header-actions .btn-card-action,
+            .sidebar-upload-actions .btn-card-action {
+                flex: 1 1 auto;
+                justify-content: center;
+            }
+
+            .header-right,
+            .header-actions {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .moodboard-grid {
+                grid-template-columns: repeat(auto-fill, minmax(138px, 1fr));
+                gap: 0.75rem;
+            }
+
+            .picker-card {
+                min-width: 84px;
+                width: 84px;
+            }
+
+            .mb-chip {
+                min-width: 68px;
+                width: 68px;
+            }
+
+            .mb-chip img {
+                height: 88px;
+            }
+
+            .sidebar-option-row {
+                grid-template-columns: 1fr;
+                gap: 0.35rem;
+            }
+
+            .generation-preview-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-group-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .modal-content {
+                max-height: 92vh;
+                flex-direction: column;
+            }
+
+            .modal-sidebar {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid var(--card-border);
+            }
+
+            .workspace-result-slide {
+                flex-basis: 100%;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .gallery-group-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .recipe-thumb-grid,
+            .recipe-thumb-stack {
+                width: 56px;
+            }
+
+            .modal-source-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
         .admin-panel-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -1048,7 +2163,9 @@
     <!-- Password Security Overlay -->
     <div id="password-modal-overlay" class="auth-modal-overlay">
         <div class="auth-card">
-            <div class="brand-badge" style="margin-bottom: 0.25rem;">RAGENTO STUDIO</div>
+            <div class="brand-badge auth" style="margin-bottom: 0.25rem;">
+                <img src="/static/ragento-logo.png" alt="Ragento">
+            </div>
             <div class="auth-lock-icon">
                 <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
@@ -1072,168 +2189,282 @@
 
     <header>
         <div class="brand-group">
-            <div class="brand-badge">RAGENTO</div>
+            <div class="brand-badge">
+                <img src="/static/ragento-logo.png" alt="Ragento">
+            </div>
             <h1>Ragento Visual Studio</h1>
         </div>
 
-        <div class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('outputs-view', this)">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                Generated Assets
-            </button>
-            <button class="tab-btn" onclick="switchTab('garments-view', this)">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                Garment Library
-            </button>
-            <button class="tab-btn" onclick="switchTab('moodboards-view', this)">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
-                Moodboard Library
-            </button>
-            <button class="tab-btn" onclick="switchTab('admin-view', this)">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                Admin & Analytics
-            </button>
+        <div class="header-right">
+            <div class="nav-tabs">
+                <button class="tab-btn active" data-view="workspace-view" onclick="switchTab('workspace-view', this)">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M7 3v4m10-4v4M5 11h14a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2z"></path></svg>
+                    Workspace
+                </button>
+                <button class="tab-btn" data-view="gallery-view" onclick="switchTab('gallery-view', this)">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    Gallery
+                </button>
+                <button class="tab-btn" data-view="garments-view" onclick="switchTab('garments-view', this)">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    Garments
+                </button>
+                <button class="tab-btn" data-view="moodboards-view" onclick="switchTab('moodboards-view', this)">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
+                    Moodboards
+                </button>
+                <button class="tab-btn" data-view="admin-view" onclick="switchTab('admin-view', this)">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    Admin
+                </button>
+            </div>
+
+            <div class="header-actions">
+                <button class="header-btn" onclick="downloadActiveBatch()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v10m0 0l-4-4m4 4l4-4M5 19h14"></path></svg>
+                    Save Batch
+                </button>
+                <button class="header-btn primary" onclick="startNewGeneration()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    New Generation
+                </button>
+            </div>
         </div>
     </header>
 
     <main>
         <div class="control-panel">
-            <div class="section-title">
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                1. Select Target Garment
-            </div>
-
-            <!-- Visual Garment Selection Carousel -->
-            <div class="form-group">
-                <label>Choose SKU (Visual Collection)</label>
-                <div class="visual-picker-grid" id="garment-picker-carousel">
-                    <!-- Dynamically rendered -->
+            <div class="sidebar-step">
+                <div class="sidebar-step-header">
+                    <div class="sidebar-step-title">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        1. Select Target Garment
+                    </div>
+                    <div class="sidebar-step-copy">Choose the product you want to generate against.</div>
+                </div>
+                <div class="sidebar-row-label">
+                    <span>Choose SKU (Visual Collection)</span>
+                </div>
+                <div class="sidebar-carousel-shell">
+                    <div class="sidebar-carousel-viewport">
+                        <div class="visual-picker-grid sidebar-carousel-track" id="garment-picker-carousel">
+                            <!-- Dynamically rendered -->
+                        </div>
+                    </div>
+                    <button class="sidebar-carousel-arrow" onclick="scrollSidebarTrack('garment-picker-carousel', 1)" aria-label="Next garment">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+                <div class="sidebar-upload-actions">
+                    <button class="btn-card-action" type="button" onclick="document.getElementById('garment-new-input').click()">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m-7-7h14"></path></svg>
+                        Upload SKU Images
+                    </button>
                 </div>
             </div>
 
-            <div class="section-title" style="margin-top: 0.5rem;">
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z"></path></svg>
-                2. Select Moodboards (Optional)
-            </div>
-
-            <div class="form-group">
-                <label style="display: flex; justify-content: space-between;">
+            <div class="sidebar-step">
+                <div class="sidebar-step-header">
+                    <div class="sidebar-step-title">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z"></path></svg>
+                        2. Select Moodboards
+                    </div>
+                    <div class="sidebar-step-copy">Choose the moodboard or reference to take inspiration from.</div>
+                </div>
+                <div class="sidebar-row-label">
                     <span>Moodboard Poses</span>
                     <span id="mb-select-count" style="color: var(--accent-cyan); font-weight: 700;">All (Default)</span>
-                </label>
-                <div class="moodboard-chips-container" id="moodboard-chips-list">
-                    <!-- Dynamically rendered -->
+                </div>
+                <div class="sidebar-carousel-shell">
+                    <div class="sidebar-carousel-viewport">
+                        <div class="moodboard-chips-container sidebar-carousel-track" id="moodboard-chips-list">
+                            <!-- Dynamically rendered -->
+                        </div>
+                    </div>
+                    <button class="sidebar-carousel-arrow" onclick="scrollSidebarTrack('moodboard-chips-list', 1)" aria-label="Next moodboard">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+                <div class="sidebar-upload-actions">
+                    <button class="btn-card-action" type="button" onclick="document.getElementById('moodboard-file-input').click()">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m-7-7h14"></path></svg>
+                        Upload Moodboards
+                    </button>
                 </div>
             </div>
 
-            <details class="dropdown-section" style="border: 1px solid var(--card-border); border-radius: 12px; padding: 0.5rem 0.85rem; background: rgba(7, 9, 14, 0.4); margin-top: 0.5rem;">
-                <summary class="section-title" style="cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div class="sidebar-step">
+                <div class="sidebar-step-header">
+                    <div class="sidebar-step-title">
                         <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
                         3. Selective Transfer & Settings
                     </div>
-                    <svg class="dropdown-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="transition: transform 0.2s;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </summary>
-
-                <div style="margin-top: 0.85rem;">
-                    <!-- Model Control -->
-                    <div class="control-label">
-                        <span>Model Identity & Face</span>
-                    </div>
-                    <div class="segment-control" id="ctrl-model">
-                        <button class="segment-btn" data-val="input" onclick="setSegment('ctrl-model', 'input', this)">Input</button>
-                        <button class="segment-btn active" data-val="auto" onclick="setSegment('ctrl-model', 'auto', this)">Model Decides</button>
-                        <button class="segment-btn" data-val="moodboard" onclick="setSegment('ctrl-model', 'moodboard', this)">Moodboard</button>
+                    <div class="sidebar-step-copy">Decide what the AI should preserve or reinterpret.</div>
+                </div>
+                <div class="sidebar-options-list">
+                    <div class="sidebar-option-row">
+                        <div class="control-label"><span>Model / Face</span></div>
+                        <div class="segment-control" id="ctrl-model">
+                            <button class="segment-btn" data-val="input" onclick="setSegment('ctrl-model', 'input', this)">Keep Target</button>
+                            <button class="segment-btn active" data-val="auto" onclick="setSegment('ctrl-model', 'auto', this)">AI Decides</button>
+                            <button class="segment-btn" data-val="moodboard" onclick="setSegment('ctrl-model', 'moodboard', this)">Follow Reference</button>
+                        </div>
                     </div>
 
-                    <!-- Pose Control -->
-                    <div class="control-label">
-                        <span>Pose & Gesture</span>
-                    </div>
-                    <div class="segment-control" id="ctrl-pose">
-                        <button class="segment-btn" data-val="input" onclick="setSegment('ctrl-pose', 'input', this)">Input</button>
-                        <button class="segment-btn active" data-val="auto" onclick="setSegment('ctrl-pose', 'auto', this)">Model Decides</button>
-                        <button class="segment-btn" data-val="moodboard" onclick="setSegment('ctrl-pose', 'moodboard', this)">Moodboard</button>
-                    </div>
-
-                    <!-- Background Control -->
-                    <div class="control-label">
-                        <span>Background & Studio</span>
-                    </div>
-                    <div class="segment-control" id="ctrl-bg">
-                        <button class="segment-btn" data-val="input" onclick="setSegment('ctrl-bg', 'input', this)">Input</button>
-                        <button class="segment-btn active" data-val="auto" onclick="setSegment('ctrl-bg', 'auto', this)">Model Decides</button>
-                        <button class="segment-btn" data-val="moodboard" onclick="setSegment('ctrl-bg', 'moodboard', this)">Moodboard</button>
+                    <div class="sidebar-option-row">
+                        <div class="control-label"><span>Pose & Gesture</span></div>
+                        <div class="segment-control" id="ctrl-pose">
+                            <button class="segment-btn" data-val="input" onclick="setSegment('ctrl-pose', 'input', this)">Keep Target</button>
+                            <button class="segment-btn active" data-val="auto" onclick="setSegment('ctrl-pose', 'auto', this)">AI Decides</button>
+                            <button class="segment-btn" data-val="moodboard" onclick="setSegment('ctrl-pose', 'moodboard', this)">Follow Reference</button>
+                        </div>
                     </div>
 
-                    <!-- Special Creative Override Directive (Subtle) -->
-                    <div class="control-label" style="margin-top: 0.5rem;">
-                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">Special Creative Directives (Optional)</span>
+                    <div class="sidebar-option-row">
+                        <div class="control-label"><span>Background</span></div>
+                        <div class="segment-control" id="ctrl-bg">
+                            <button class="segment-btn" data-val="input" onclick="setSegment('ctrl-bg', 'input', this)">Keep Original</button>
+                            <button class="segment-btn active" data-val="auto" onclick="setSegment('ctrl-bg', 'auto', this)">AI Decides</button>
+                            <button class="segment-btn" data-val="moodboard" onclick="setSegment('ctrl-bg', 'moodboard', this)">Follow Reference</button>
+                        </div>
                     </div>
-                    <input type="text" id="ctrl-override" placeholder="e.g. Add flower pot in backdrop, wears gold earrings..." style="width: 100%; background: #000; border: 1px solid var(--card-border); border-radius: 6px; padding: 6px 10px; font-size: 0.75rem; color: var(--text-main); margin-bottom: 0.75rem; font-family: inherit;" onchange="transferControls.custom_override = this.value">
 
-                    <!-- Output Resolution Selector -->
-                    <div class="control-label" style="margin-top: 0.25rem;">
-                        <span>Output Resolution</span>
+                    <div class="sidebar-option-row">
+                        <div class="control-label"><span>Lighting</span></div>
+                        <div class="segment-control">
+                            <button class="segment-btn active" type="button">AI Decides</button>
+                        </div>
                     </div>
+
+                    <div class="sidebar-option-row">
+                        <div class="control-label"><span>Styling / Props</span></div>
+                        <div class="segment-control">
+                            <button class="segment-btn active" type="button">Keep Original</button>
+                            <button class="segment-btn" type="button" onclick="document.getElementById('ctrl-override').focus()">Custom Override</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 0.2rem;">
+                    <label for="ctrl-override" style="font-size: 0.68rem;">Special Creative Directives</label>
+                    <input type="text" id="ctrl-override" placeholder="e.g. Add flower pot in backdrop, wears gold earrings..." style="width: 100%; background: rgba(5, 10, 18, 0.88); border: 1px solid rgba(71, 91, 118, 0.52); border-radius: 8px; padding: 0.65rem 0.75rem; font-size: 0.72rem; color: var(--text-main); font-family: inherit;" onchange="transferControls.custom_override = this.value">
+                </div>
+
+                <div class="form-group">
+                    <label for="ctrl-res" style="font-size: 0.68rem;">Output Resolution</label>
                     <div class="resolution-grid" id="ctrl-res">
                         <button class="res-btn" data-val="1024x1024" onclick="setResolution('1024x1024', this)">1K (1024px)</button>
                         <button class="res-btn active" data-val="2048x2048" onclick="setResolution('2048x2048', this)">2K (Default)</button>
                         <button class="res-btn" data-val="4096x4096" onclick="setResolution('4096x4096', this)">4K High-Res</button>
                     </div>
                 </div>
-            </details>
-
-            <div class="section-title" style="margin-top: 0.5rem;">
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                4. Launch Pipeline
             </div>
 
-            <div class="form-group">
-                <label for="shot-count">Catalog Shots to Render</label>
-                <div class="shot-slider-container">
-                    <input type="range" id="shot-count" min="1" max="5" value="3" oninput="document.getElementById('shot-val').innerText = this.value">
-                    <span id="shot-val" class="shot-number">3</span>
+            <div class="sidebar-step">
+                <div class="sidebar-step-header">
+                    <div class="sidebar-step-title">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        4. Launch Pipeline
+                    </div>
+                    <div class="sidebar-step-copy">This will generate multiple variations from the chosen recipe.</div>
                 </div>
-            </div>
-
-            <button id="btn-generate" class="btn-generate" onclick="runGeneration()">
-                <div class="loader" id="loader"></div>
-                <span id="btn-text">Generate Selected Shots</span>
-            </button>
-
-            <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 0.5rem 0;">
-
-            <div style="display: flex; gap: 0.75rem;">
-                <button class="btn-upload" style="flex: 1; font-size: 0.75rem;" onclick="document.getElementById('garment-new-input').click()">
-                    + New SKU
+                <div class="form-group">
+                    <label for="shot-count">Catalog Shots to Render</label>
+                    <div class="shot-slider-container">
+                        <input type="range" id="shot-count" min="1" max="5" value="3" oninput="document.getElementById('shot-val').innerText = this.value">
+                        <span id="shot-val" class="shot-number">3</span>
+                    </div>
+                </div>
+                <button id="btn-generate" class="btn-generate" onclick="runGeneration()">
+                    <div class="loader" id="loader"></div>
+                    <span id="btn-text">Generate Images</span>
                 </button>
-                <button class="btn-upload" style="flex: 1; font-size: 0.75rem;" onclick="document.getElementById('moodboard-file-input').click()">
-                    + Moodboard
-                </button>
+                <div class="sidebar-launch-note">This will generate multiple variations</div>
             </div>
             <input type="file" id="garment-new-input" multiple accept="image/*" style="display: none;" onchange="handleNewGarmentUpload(this)">
             <input type="file" id="moodboard-file-input" multiple accept="image/*" style="display: none;" onchange="handleMoodboardUpload(this)">
         </div>
 
         <div class="content-area">
-            <!-- TAB 1: Generated Gallery -->
-            <div id="outputs-view" class="tab-view active">
-                <div class="view-header">
-                    <div class="view-title-group">
-                        <div class="view-title">Generated Catalog Asset Gallery</div>
-                        <span id="asset-count" class="counter-badge">Loading...</span>
+            <div id="workspace-view" class="tab-view active">
+                <div class="workspace-shell">
+                    <div class="workspace-panel">
+                        <div class="workspace-panel-header">
+                            <div class="workspace-panel-title">
+                                <h3>Generation Recipe</h3>
+                                <p>Review your chosen garment, visual direction, and reinterpretation rules.</p>
+                            </div>
+                            <button class="btn-card-action" onclick="focusRecipeControls()">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5h2m-1 0v14m-7-7h14"></path></svg>
+                                Edit Recipe
+                            </button>
+                        </div>
+                        <div id="recipe-assembly" class="recipe-assembly"></div>
                     </div>
-                    <div class="filter-group">
-                        <div class="filter-chip active" onclick="filterOutputs('ALL', this)">All</div>
-                        <div class="filter-chip" onclick="filterOutputs('AUTO_APPROVED', this)">Auto Approved</div>
-                        <div class="filter-chip" onclick="filterOutputs('FLAGGED', this)">Flagged Review</div>
+
+                    <div class="workspace-panel">
+                        <div class="workspace-panel-header">
+                            <div class="workspace-panel-title">
+                                <h3>Generated Results</h3>
+                                <p id="workspace-results-subtitle">Most recent batch results will appear here.</p>
+                            </div>
+                            <div style="display:flex; gap:0.65rem; flex-wrap:wrap;">
+                                <button class="btn-card-action" onclick="jumpToGallery('batch')">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8m-8 5h8m-8 5h8"></path></svg>
+                                    Compare
+                                </button>
+                                <button class="btn-card-action" onclick="downloadActiveBatch()">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v10m0 0l-4-4m4 4l4-4M5 19h14"></path></svg>
+                                    Download All
+                                </button>
+                            </div>
+                        </div>
+                        <div id="workspace-results-grid" class="workspace-results-carousel">
+                            <div class="loading-state">
+                                <div class="loader" style="display: block; width: 40px; height: 40px; border-width: 4px;"></div>
+                                <div>Fetching generated assets...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="workspace-panel">
+                        <div class="workspace-panel-header">
+                            <div class="workspace-panel-title">
+                                <h3>Batch Overview</h3>
+                                <p id="batch-overview-subtitle">Recent generation runs grouped as batches.</p>
+                            </div>
+                            <button class="btn-card-action" onclick="jumpToGallery('batch')">
+                                View All Batches
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </button>
+                        </div>
+                        <div id="batch-strip" class="batch-strip"></div>
                     </div>
                 </div>
-                <div id="grid-cards" class="grid-cards">
+            </div>
+
+            <div id="gallery-view" class="tab-view">
+                <div class="view-header">
+                    <div class="view-title-group">
+                        <div class="view-title">Generated Gallery</div>
+                        <span id="asset-count" class="counter-badge">Loading...</span>
+                    </div>
+                    <div class="gallery-toolbar">
+                        <div class="view-toggle" id="gallery-view-toggle">
+                            <button class="active" onclick="setGalleryGrouping('batch', this)">By Batch</button>
+                            <button onclick="setGalleryGrouping('sku', this)">By SKU</button>
+                        </div>
+                        <div class="filter-group">
+                            <div class="filter-chip active" onclick="filterOutputs('ALL', this)">All</div>
+                            <div class="filter-chip" onclick="filterOutputs('AUTO_APPROVED', this)">Auto Approved</div>
+                            <div class="filter-chip" onclick="filterOutputs('FLAGGED', this)">Flagged Review</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="gallery-groups" class="gallery-groups">
                     <div class="loading-state">
                         <div class="loader" style="display: block; width: 40px; height: 40px; border-width: 4px;"></div>
-                        <div>Fetching output assets...</div>
+                        <div>Preparing grouped gallery...</div>
                     </div>
                 </div>
             </div>
@@ -1244,6 +2475,12 @@
                     <div class="view-title-group">
                         <div class="view-title">Input Garment Library (SKU Division)</div>
                         <span id="sku-count-badge" class="counter-badge">Loading...</span>
+                    </div>
+                    <div class="view-header-actions">
+                        <button class="btn-card-action primary" type="button" onclick="document.getElementById('garment-new-input').click()">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m-7-7h14"></path></svg>
+                            Upload SKU Images
+                        </button>
                     </div>
                 </div>
                 <div id="garments-container" style="display: flex; flex-direction: column; gap: 1.5rem;">
@@ -1258,8 +2495,14 @@
                         <div class="view-title">Moodboard Pose & Studio References</div>
                         <span id="moodboard-count" class="counter-badge">Loading...</span>
                     </div>
+                    <div class="view-header-actions">
+                        <button class="btn-card-action primary" type="button" onclick="document.getElementById('moodboard-file-input').click()">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m-7-7h14"></path></svg>
+                            Upload Moodboards
+                        </button>
+                    </div>
                 </div>
-                <div id="moodboard-grid" class="thumb-grid" style="grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1.25rem;">
+                <div id="moodboard-grid" class="moodboard-grid">
                     <!-- Dynamically rendered -->
                 </div>
             </div>
@@ -1372,6 +2615,17 @@
         </div>
     </main>
 
+    <div id="sidebar-hover-preview" class="sidebar-hover-preview" aria-hidden="true">
+        <div class="sidebar-hover-preview-media">
+            <img id="sidebar-hover-preview-img" src="" alt="Sidebar preview">
+            <div class="thumb-fallback" id="sidebar-hover-preview-fallback">Preview unavailable</div>
+        </div>
+        <div class="sidebar-hover-preview-body">
+            <strong id="sidebar-hover-preview-title"></strong>
+            <span id="sidebar-hover-preview-subtitle"></span>
+        </div>
+    </div>
+
     <!-- Lightbox Modal -->
     <div id="lightbox-modal" class="modal-overlay" onclick="closeModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
@@ -1394,10 +2648,212 @@
         let cachedOutputs = [];
         let activeOutputFilter = 'ALL';
         let currentTargetSkuUpload = '';
-        
-        // Selected Generation Parameters
-        let selectedGarmentSku = ''; // Empty means Batch All
-        let selectedMoodboards = new Set(); // Empty set means All Moodboards
+        let selectedGarmentSku = '';
+        let selectedMoodboards = new Set();
+        let assetRevision = Date.now();
+        let activeBatchId = '';
+        let galleryGrouping = 'batch';
+        let workspaceResultsPage = 0;
+        let pendingGeneration = null;
+        let generationProgressTimer = null;
+        let sidebarPeekTimer = null;
+        let sidebarPeekAnchor = null;
+        let modalState = null;
+        const SIDEBAR_PEEK_DELAY_MS = 700;
+
+        const generationProgressSteps = [
+            { key: 'prepare', title: 'Preparing recipe', detail: 'Locking garment, moodboard, and transfer settings for this run.' },
+            { key: 'plan', title: 'Planning shots', detail: 'Building the shot list and assigning pose/reference inputs.' },
+            { key: 'generate', title: 'Generating images', detail: 'Rendering the requested catalog variations.' },
+            { key: 'qc', title: 'Running quality checks', detail: 'Inspecting garment fidelity and routing the outputs.' },
+            { key: 'finalize', title: 'Finalizing batch', detail: 'Saving approved results and refreshing the workspace.' }
+        ];
+
+        const transferControls = {
+            model: 'auto',
+            pose: 'auto',
+            background: 'auto',
+            resolution: '2048x2048',
+            custom_override: ''
+        };
+
+        function assetUrl(url) {
+            if (!url) return '';
+            const normalized = encodeURI(url);
+            const joiner = normalized.includes('?') ? '&' : '?';
+            return `${normalized}${joiner}v=${assetRevision}`;
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function escapeJsString(value) {
+            return String(value ?? '')
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/\n/g, '\\n');
+        }
+
+        function handleImageError(img, label) {
+            const fallback = img.nextElementSibling;
+            img.style.display = 'none';
+            if (fallback && fallback.classList.contains('thumb-fallback')) {
+                fallback.style.display = 'flex';
+                fallback.textContent = `${label} preview unavailable`;
+            }
+        }
+
+        function clearSidebarPeekTimer() {
+            if (sidebarPeekTimer) {
+                window.clearTimeout(sidebarPeekTimer);
+                sidebarPeekTimer = null;
+            }
+        }
+
+        function positionSidebarPeek(anchor) {
+            const preview = document.getElementById('sidebar-hover-preview');
+            if (!preview || !anchor) return;
+            const rect = anchor.getBoundingClientRect();
+            const previewWidth = 260;
+            const left = Math.min(window.innerWidth - previewWidth - 16, rect.right + 16);
+            const top = Math.max(16, Math.min(window.innerHeight - preview.offsetHeight - 16, rect.top));
+            preview.style.left = `${left}px`;
+            preview.style.top = `${top}px`;
+        }
+
+        function showSidebarPeek(anchor, imageUrl, title, subtitle = '', label = 'Preview') {
+            const preview = document.getElementById('sidebar-hover-preview');
+            const img = document.getElementById('sidebar-hover-preview-img');
+            const titleNode = document.getElementById('sidebar-hover-preview-title');
+            const subtitleNode = document.getElementById('sidebar-hover-preview-subtitle');
+            const fallback = document.getElementById('sidebar-hover-preview-fallback');
+            if (!preview || !img || !titleNode || !subtitleNode || !fallback) return;
+
+            sidebarPeekAnchor = anchor;
+            titleNode.textContent = title || label;
+            subtitleNode.textContent = subtitle || '';
+            img.style.display = 'block';
+            fallback.style.display = 'none';
+            fallback.textContent = `${label} preview unavailable`;
+            img.onerror = () => handleImageError(img, label);
+            img.src = imageUrl;
+            preview.classList.add('visible');
+            preview.setAttribute('aria-hidden', 'false');
+            positionSidebarPeek(anchor);
+        }
+
+        function hideSidebarPeek() {
+            clearSidebarPeekTimer();
+            sidebarPeekAnchor = null;
+            const preview = document.getElementById('sidebar-hover-preview');
+            if (!preview) return;
+            preview.classList.remove('visible');
+            preview.setAttribute('aria-hidden', 'true');
+        }
+
+        function scheduleSidebarPeek(anchor, imageUrl, title, subtitle = '', label = 'Preview') {
+            clearSidebarPeekTimer();
+            sidebarPeekAnchor = anchor;
+            sidebarPeekTimer = window.setTimeout(() => {
+                showSidebarPeek(anchor, imageUrl, title, subtitle, label);
+            }, SIDEBAR_PEEK_DELAY_MS);
+        }
+
+        function serializeItem(item) {
+            return JSON.stringify(item).replace(/"/g, '&quot;');
+        }
+
+        function controlSummaryLabel(key, value) {
+            const map = {
+                model: { input: 'Keep Target', auto: 'AI Decides', moodboard: 'Follow Reference' },
+                pose: { input: 'Keep Target', auto: 'AI Decides', moodboard: 'Follow Reference' },
+                background: { input: 'Keep Original', auto: 'AI Decides', moodboard: 'Follow Reference' },
+                resolution: {
+                    '1024x1024': '1K Output',
+                    '2048x2048': '2K Output',
+                    '4096x4096': '4K Output'
+                }
+            };
+            return map[key]?.[value] || value || 'AI Decides';
+        }
+
+        function cloneTransferControls() {
+            return JSON.parse(JSON.stringify(transferControls));
+        }
+
+        function dedupeSourceImages(images = []) {
+            const seen = new Set();
+            return images.filter(image => {
+                const key = `${image?.filename || ''}|${image?.url || ''}`;
+                if (!image?.url || seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+        }
+
+        function getSkuById(skuId) {
+            return cachedSkus.find(item => item.id === skuId) || null;
+        }
+
+        function getMoodboardByFilename(filename) {
+            return cachedMoodboards.find(item => item.filename === filename) || null;
+        }
+
+        function buildFallbackTargetImagesForSku(skuId) {
+            const garment = getSkuById(skuId);
+            if (!garment) return [];
+            const galleryImages = (garment.images || []).map(image => ({
+                filename: image.filename,
+                url: assetUrl(image.url)
+            }));
+            if (galleryImages.length) return galleryImages;
+            if (garment.sample_image) {
+                return [{
+                    filename: garment.name,
+                    url: assetUrl(garment.sample_image)
+                }];
+            }
+            return [];
+        }
+
+        function buildFallbackReferenceImages(referenceNames = []) {
+            const matched = dedupeSourceImages(
+                referenceNames
+                    .map(name => getMoodboardByFilename(name))
+                    .filter(Boolean)
+                    .map(item => ({ filename: item.filename, url: assetUrl(item.url) }))
+            );
+            if (matched.length) return matched;
+
+            const selected = dedupeSourceImages(
+                cachedMoodboards
+                    .filter(item => selectedMoodboards.has(item.filename))
+                    .map(item => ({ filename: item.filename, url: assetUrl(item.url) }))
+            );
+            if (selected.length) return selected;
+
+            if (cachedMoodboards[0]) {
+                return [{
+                    filename: cachedMoodboards[0].filename,
+                    url: assetUrl(cachedMoodboards[0].url)
+                }];
+            }
+            return [];
+        }
+
+        function getPrimaryTargetImage(item) {
+            return item?.source_assets?.primary_target_image || item?.source_assets?.target_images?.[0] || null;
+        }
+
+        function getPrimaryReferenceImage(item) {
+            return item?.source_assets?.primary_reference_image || item?.source_assets?.reference_images?.[0] || null;
+        }
 
         function checkAuthentication() {
             const isAuthed = sessionStorage.getItem('ragento_auth');
@@ -1413,9 +2869,7 @@
         function verifyStudioPassword() {
             const passInput = document.getElementById('auth-pass-input');
             const errorMsg = document.getElementById('auth-error-msg');
-            const val = passInput.value.trim();
-            
-            if (val === 'ragento.ai') {
+            if (passInput.value.trim() === 'ragento.ai') {
                 sessionStorage.setItem('ragento_auth', 'true');
                 errorMsg.style.display = 'none';
                 document.getElementById('password-modal-overlay').style.display = 'none';
@@ -1426,71 +2880,381 @@
             }
         }
 
-        function switchTab(viewId, btn) {
+        function switchTab(viewId, btn = null) {
             document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
-            btn.classList.add('active');
+            const resolvedBtn = btn || document.querySelector(`.tab-btn[data-view="${viewId}"]`);
+            if (resolvedBtn) resolvedBtn.classList.add('active');
+            if (viewId === 'admin-view') loadAdminAnalytics();
+            if (viewId === 'gallery-view') renderGalleryView();
+        }
 
-            if (viewId === 'admin-view') {
-                loadAdminAnalytics();
+        function focusRecipeControls() {
+            document.querySelector('.control-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function startNewGeneration() {
+            if (cachedSkus.length > 0) selectedGarmentSku = cachedSkus[0].id;
+            if (cachedMoodboards.length > 0) selectedMoodboards = new Set([cachedMoodboards[0].filename]);
+            activeBatchId = '';
+            clearPendingGeneration();
+            document.getElementById('ctrl-override').value = '';
+            transferControls.custom_override = '';
+            renderGarmentPickerCarousel();
+            renderMoodboardChips();
+            renderWorkspace();
+            switchTab('workspace-view');
+        }
+
+        function ensureSelections() {
+            if (!selectedGarmentSku && cachedSkus.length > 0) {
+                selectedGarmentSku = cachedSkus[0].id;
+            }
+            if (selectedMoodboards.size === 0 && cachedMoodboards.length > 0) {
+                selectedMoodboards = new Set([cachedMoodboards[0].filename]);
             }
         }
 
         async function loadInitialData() {
             checkAuthentication();
             try {
-                // Fetch SKUs
-                const skuRes = await fetch('/api/skus');
+                assetRevision = Date.now();
+                const [skuRes, mbRes] = await Promise.all([
+                    fetch('/api/skus'),
+                    fetch('/api/moodboards')
+                ]);
                 cachedSkus = await skuRes.json();
-                
-                renderGarmentPickerCarousel();
-                renderGarmentGallery();
-
-                // Fetch Moodboards
-                const mbRes = await fetch('/api/moodboards');
                 cachedMoodboards = await mbRes.json();
+                ensureSelections();
+                renderGarmentPickerCarousel();
                 renderMoodboardChips();
+                renderGarmentGallery();
                 renderMoodboardGallery();
-
-                // Fetch Output Summary
                 await refreshSummary();
-                
-                // Preload Admin Analytics metrics
                 loadAdminAnalytics();
             } catch (err) {
-                console.error("Error loading initial data:", err);
+                console.error('Error loading initial data:', err);
             }
         }
 
-        function renderGarmentPickerCarousel() {
-            const carousel = document.getElementById('garment-picker-carousel');
-            
-            let html = `
-                <div class="picker-card ${selectedGarmentSku === '' ? 'selected' : ''}" onclick="selectPickerGarment('')">
-                    <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b; color:var(--accent-cyan); font-weight:700; font-size:0.75rem; text-align:center; padding:0.2rem;">
-                        ALL SKUs
-                    </div>
-                    <div class="picker-card-label">Batch Process</div>
-                </div>
-            `;
+        function formatTimestamp(raw) {
+            if (!raw) return 'Just now';
+            if (raw.includes('-')) return raw;
+            const clean = String(raw).replace(/[^\d]/g, '');
+            if (clean.length < 14) return raw;
+            return `${clean.slice(0, 4)}-${clean.slice(4, 6)}-${clean.slice(6, 8)} ${clean.slice(8, 10)}:${clean.slice(10, 12)}:${clean.slice(12, 14)}`;
+        }
 
-            cachedSkus.forEach(s => {
-                const isSelected = selectedGarmentSku === s.id;
-                html += `
-                    <div class="picker-card ${isSelected ? 'selected' : ''}" onclick="selectPickerGarment('${s.id}')">
-                        <img src="${s.sample_image}" alt="${s.name}">
-                        <div class="picker-card-label">${s.name}</div>
-                    </div>
-                `;
+        function getOutputImageUrl(item) {
+            if (!item.final_image_path || !item.final_image_path.includes('/output/')) return '';
+            return assetUrl(`/api/image/output/${item.final_image_path.split('/output/')[1]}`);
+        }
+
+        function getFilteredOutputs() {
+            const items = [...cachedOutputs];
+            if (activeOutputFilter === 'AUTO_APPROVED') return items.filter(item => item.status === 'AUTO_APPROVED');
+            if (activeOutputFilter === 'FLAGGED') return items.filter(item => item.status !== 'AUTO_APPROVED');
+            return items;
+        }
+
+        function getBatchGroups(items = cachedOutputs) {
+            const groups = new Map();
+            items.forEach(item => {
+                const key = item.batch_id || `${item.sku_id}_${(item.timestamp || 'legacy').slice(0, 15)}`;
+                if (!groups.has(key)) {
+                    groups.set(key, {
+                        id: key,
+                        label: item.batch_label || item.batch_id || 'Generation Batch',
+                        items: [],
+                        latestTimestamp: item.timestamp || '',
+                    });
+                }
+                const group = groups.get(key);
+                group.items.push(item);
+                if ((item.timestamp || '') > group.latestTimestamp) group.latestTimestamp = item.timestamp || '';
             });
+            return Array.from(groups.values())
+                .map(group => ({
+                    ...group,
+                    items: group.items.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || '') || (a.shot_number || 0) - (b.shot_number || 0)),
+                    skuCount: new Set(group.items.map(item => item.sku_id)).size,
+                    moodCount: new Set(group.items.map(item => item.pose_source)).size
+                }))
+                .sort((a, b) => (b.latestTimestamp || '').localeCompare(a.latestTimestamp || ''));
+        }
 
-            carousel.innerHTML = html;
+        function getSkuGroups(items = cachedOutputs) {
+            const groups = new Map();
+            items.forEach(item => {
+                if (!groups.has(item.sku_id)) {
+                    groups.set(item.sku_id, { id: item.sku_id, label: item.sku_id, items: [] });
+                }
+                groups.get(item.sku_id).items.push(item);
+            });
+            return Array.from(groups.values())
+                .map(group => ({
+                    ...group,
+                    items: group.items.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || '')),
+                    batchCount: new Set(group.items.map(item => item.batch_id || item.timestamp)).size
+                }))
+                .sort((a, b) => a.label.localeCompare(b.label));
+        }
+
+        function getActiveBatch() {
+            const groups = getBatchGroups(cachedOutputs);
+            if (!groups.length) return null;
+            if (!activeBatchId || !groups.some(group => group.id === activeBatchId)) {
+                activeBatchId = groups[0].id;
+            }
+            return groups.find(group => group.id === activeBatchId) || groups[0];
+        }
+
+        function stripExtension(value) {
+            return String(value || '').replace(/\.[^.]+$/, '');
+        }
+
+        function normalizeAssetName(value) {
+            return stripExtension(value).trim().toLowerCase();
+        }
+
+        function findMoodboardBySource(source) {
+            if (!source) return null;
+            const normalized = normalizeAssetName(source);
+            return cachedMoodboards.find(item => normalizeAssetName(item.filename) === normalized)
+                || cachedMoodboards.find(item => selectedMoodboards.has(item.filename))
+                || cachedMoodboards[0]
+                || null;
+        }
+
+        function getRepresentativeBatchItem(batch) {
+            if (!batch?.items?.length) return null;
+            return batch.items
+                .slice()
+                .sort((a, b) => (a.shot_number || 0) - (b.shot_number || 0) || (b.timestamp || '').localeCompare(a.timestamp || ''))[0];
+        }
+
+        function summarizeBatchControl(batch, key) {
+            const values = Array.from(new Set(
+                batch.items
+                    .map(item => item.controls?.[key])
+                    .filter(value => value !== undefined && value !== null && value !== '')
+            ));
+            if (!values.length) return controlSummaryLabel(key, 'auto');
+            if (values.length === 1) return controlSummaryLabel(key, values[0]);
+            return 'Mixed Batch';
+        }
+
+        function summarizeBatchStyling(batch) {
+            const overrides = Array.from(new Set(
+                batch.items
+                    .map(item => String(item.controls?.custom_override || '').trim())
+                    .filter(Boolean)
+            ));
+            if (!overrides.length) return 'Keep Original';
+            return overrides.length === 1 ? 'Custom Override' : 'Mixed Overrides';
+        }
+
+        function buildDraftRecipeContext() {
+            const garment = selectedGarmentSku ? cachedSkus.find(item => item.id === selectedGarmentSku) : null;
+            const moodboard = cachedMoodboards.find(item => selectedMoodboards.has(item.filename)) || cachedMoodboards[0] || null;
+            const targetImages = buildFallbackTargetImagesForSku(garment?.id || '');
+            const referenceImages = buildFallbackReferenceImages(Array.from(selectedMoodboards));
+            return {
+                mode: 'draft',
+                batch: null,
+                garment,
+                moodboard,
+                garmentCount: garment ? 1 : cachedSkus.length,
+                moodboardCount: selectedMoodboards.size || (moodboard ? 1 : 0),
+                moodboardName: moodboard ? stripExtension(moodboard.filename) : 'No moodboard selected',
+                changeRows: [
+                    ['Model / Face', controlSummaryLabel('model', transferControls.model)],
+                    ['Pose & Gesture', controlSummaryLabel('pose', transferControls.pose)],
+                    ['Background', controlSummaryLabel('background', transferControls.background)],
+                    ['Lighting', 'AI Decides'],
+                    ['Styling / Props', transferControls.custom_override ? 'Custom Override' : 'Keep Original']
+                ],
+                sourceCount: garment?.image_count || 0,
+                framing: 'Catalog',
+                moodboardFallback: false,
+                targetImages,
+                referenceImages,
+                missingReferenceNames: [],
+            };
+        }
+
+        function getPendingRecipeContext() {
+            if (!pendingGeneration) return null;
+            const garment = pendingGeneration.skuId ? cachedSkus.find(item => item.id === pendingGeneration.skuId) : null;
+            const firstMoodboardName = pendingGeneration.moodboards[0] || '';
+            const moodboard = cachedMoodboards.find(item => item.filename === firstMoodboardName) || null;
+            const targetImages = buildFallbackTargetImagesForSku(garment?.id || '');
+            const referenceImages = buildFallbackReferenceImages(pendingGeneration.moodboards);
+            return {
+                mode: 'pending',
+                batch: null,
+                garment,
+                moodboard,
+                garmentCount: garment ? 1 : cachedSkus.length,
+                moodboardCount: pendingGeneration.moodboards.length || (moodboard ? 1 : 0),
+                moodboardName: moodboard ? stripExtension(moodboard.filename) : (pendingGeneration.moodboards.length ? stripExtension(pendingGeneration.moodboards[0]) : 'Auto Moodboard'),
+                changeRows: [
+                    ['Model / Face', controlSummaryLabel('model', pendingGeneration.controls.model)],
+                    ['Pose & Gesture', controlSummaryLabel('pose', pendingGeneration.controls.pose)],
+                    ['Background', controlSummaryLabel('background', pendingGeneration.controls.background)],
+                    ['Lighting', 'AI Decides'],
+                    ['Styling / Props', pendingGeneration.controls.custom_override ? 'Custom Override' : 'Keep Original']
+                ],
+                sourceCount: garment?.image_count || 0,
+                framing: 'Catalog',
+                moodboardFallback: false,
+                targetImages,
+                referenceImages,
+                missingReferenceNames: [],
+            };
+        }
+
+        function startPendingGeneration(meta) {
+            clearPendingGeneration();
+            pendingGeneration = {
+                ...meta,
+                stepIndex: 0,
+                startedAt: Date.now()
+            };
+            generationProgressTimer = window.setInterval(() => {
+                if (!pendingGeneration) return;
+                pendingGeneration.stepIndex = Math.min(generationProgressSteps.length - 1, pendingGeneration.stepIndex + 1);
+                renderWorkspaceResults();
+            }, 3200);
+        }
+
+        function clearPendingGeneration() {
+            if (generationProgressTimer) {
+                window.clearInterval(generationProgressTimer);
+                generationProgressTimer = null;
+            }
+            pendingGeneration = null;
+        }
+
+        function getRecipeContext() {
+            const pendingContext = getPendingRecipeContext();
+            if (pendingContext) return pendingContext;
+
+            const activeBatch = getActiveBatch();
+            if (activeBatch) {
+                const batchItem = getRepresentativeBatchItem(activeBatch);
+                const skuIds = Array.from(new Set(activeBatch.items.map(item => item.sku_id).filter(Boolean)));
+                const moodSources = Array.from(new Set(activeBatch.items.map(item => item.pose_source).filter(Boolean)));
+                const garment = skuIds.length === 1 ? cachedSkus.find(item => item.id === skuIds[0]) : null;
+                const matchedMoodboard = moodSources.length === 1
+                    ? cachedMoodboards.find(item => normalizeAssetName(item.filename) === normalizeAssetName(moodSources[0]))
+                    : null;
+                const moodboard = moodSources.length === 1
+                    ? findMoodboardBySource(moodSources[0])
+                    : (cachedMoodboards.find(item => selectedMoodboards.has(item.filename)) || cachedMoodboards[0] || null);
+                let targetImages = dedupeSourceImages(activeBatch.items.flatMap(item => item.source_assets?.target_images || [])).map(image => ({
+                    filename: image.filename,
+                    url: assetUrl(image.url)
+                }));
+                let referenceImages = dedupeSourceImages(activeBatch.items.flatMap(item => item.source_assets?.reference_images || [])).map(image => ({
+                    filename: image.filename,
+                    url: assetUrl(image.url)
+                }));
+                const missingReferenceNames = Array.from(new Set(activeBatch.items.flatMap(item => item.source_assets?.missing_reference_names || [])));
+                if (!targetImages.length && garment?.id) {
+                    targetImages = buildFallbackTargetImagesForSku(garment.id);
+                }
+                if (!referenceImages.length) {
+                    referenceImages = buildFallbackReferenceImages(moodSources);
+                }
+                return {
+                    mode: 'batch',
+                    batch: activeBatch,
+                    garment,
+                    moodboard,
+                    garmentCount: skuIds.length || cachedSkus.length,
+                    moodboardCount: moodSources.length,
+                    moodboardName: moodSources.length === 1 ? stripExtension(moodSources[0]) : 'Multiple References',
+                    changeRows: [
+                        ['Model / Face', summarizeBatchControl(activeBatch, 'model')],
+                        ['Pose & Gesture', summarizeBatchControl(activeBatch, 'pose')],
+                        ['Background', summarizeBatchControl(activeBatch, 'background')],
+                        ['Lighting', 'AI Decides'],
+                        ['Styling / Props', summarizeBatchStyling(activeBatch)]
+                    ],
+                    sourceCount: garment?.image_count || 0,
+                    framing: batchItem?.framing || 'Catalog',
+                    moodboardFallback: moodSources.length === 1 && !matchedMoodboard,
+                    targetImages,
+                    referenceImages,
+                    missingReferenceNames,
+                };
+            }
+
+            return buildDraftRecipeContext();
+        }
+
+        function getWorkspaceVisibleCount() {
+            if (window.innerWidth <= 700) return 1;
+            if (window.innerWidth <= 1100) return 2;
+            return 3;
+        }
+
+        function scrollSidebarTrack(trackId, direction) {
+            const track = document.getElementById(trackId);
+            if (!track) return;
+            const card = track.firstElementChild;
+            const gap = trackId === 'moodboard-chips-list' ? 9 : 11;
+            const amount = (card ? card.getBoundingClientRect().width : 92) + gap;
+            track.scrollBy({ left: amount * direction * (trackId === 'moodboard-chips-list' ? 2 : 1), behavior: 'smooth' });
         }
 
         function selectPickerGarment(skuId) {
             selectedGarmentSku = skuId;
             renderGarmentPickerCarousel();
+            renderWorkspaceRecipe();
+        }
+
+        function renderGarmentPickerCarousel() {
+            const carousel = document.getElementById('garment-picker-carousel');
+            let html = `
+                <div class="picker-card ${selectedGarmentSku === '' ? 'selected' : ''}" onclick="selectPickerGarment('')">
+                    <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b; color:var(--accent-cyan); font-weight:700; font-size:0.75rem; text-align:center; padding:0.4rem;">
+                        ALL
+                    </div>
+                    <div class="picker-card-label"><strong>ALL</strong><span>Batch generation</span></div>
+                </div>
+            `;
+            cachedSkus.forEach(sku => {
+                const isSelected = selectedGarmentSku === sku.id;
+                html += `
+                    <div class="picker-card ${isSelected ? 'selected' : ''}" onclick="selectPickerGarment('${escapeJsString(sku.id)}')" onmouseenter="scheduleSidebarPeek(this, '${escapeJsString(assetUrl(sku.sample_image))}', '${escapeJsString(sku.id)}', '${escapeJsString(sku.name)}', 'Garment')" onmouseleave="hideSidebarPeek()">
+                        <img src="${assetUrl(sku.sample_image)}" alt="${escapeHtml(sku.name)}" loading="lazy" onerror="handleImageError(this, 'SKU')">
+                        <div class="thumb-fallback">SKU preview unavailable</div>
+                        <div class="picker-card-label">
+                            <strong>${escapeHtml(sku.id)}</strong>
+                            <span>${escapeHtml(sku.name)}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            carousel.innerHTML = html;
+        }
+
+        function toggleMoodboardChip(filename) {
+            if (selectedMoodboards.has(filename)) selectedMoodboards.delete(filename);
+            else selectedMoodboards.add(filename);
+            if (selectedMoodboards.size === 0 && cachedMoodboards.length > 0) {
+                selectedMoodboards = new Set([cachedMoodboards[0].filename]);
+            }
+            renderMoodboardChips();
+            renderWorkspaceRecipe();
+        }
+
+        function updateMoodboardCounter() {
+            const label = document.getElementById('mb-select-count');
+            label.textContent = selectedMoodboards.size > 0 ? `${selectedMoodboards.size} Selected` : 'All (Default)';
         }
 
         function renderMoodboardChips() {
@@ -1499,73 +3263,43 @@
                 container.innerHTML = `<span style="font-size:0.75rem; color:var(--text-muted);">No moodboards uploaded</span>`;
                 return;
             }
-
             container.innerHTML = cachedMoodboards.map(mb => {
                 const isSelected = selectedMoodboards.has(mb.filename);
                 return `
-                    <div class="mb-chip ${isSelected ? 'selected' : ''}" onclick="toggleMoodboardChip('${mb.filename}')">
-                        <img src="${mb.url}" alt="${mb.filename}">
-                        <span>${mb.filename.split('.')[0]}</span>
+                    <div class="mb-chip ${isSelected ? 'selected' : ''}" onclick="toggleMoodboardChip('${escapeJsString(mb.filename)}')" onmouseenter="scheduleSidebarPeek(this, '${escapeJsString(assetUrl(mb.url))}', '${escapeJsString(stripExtension(mb.filename))}', 'Moodboard reference', 'Moodboard')" onmouseleave="hideSidebarPeek()">
+                        <img src="${assetUrl(mb.url)}" alt="${escapeHtml(mb.filename)}" loading="lazy">
+                        <div class="mb-chip-text">${escapeHtml(mb.filename.replace(/\.[^.]+$/, ''))}</div>
                     </div>
                 `;
             }).join('');
-
             updateMoodboardCounter();
-        }
-
-        function toggleMoodboardChip(filename) {
-            if (selectedMoodboards.has(filename)) {
-                selectedMoodboards.delete(filename);
-            } else {
-                selectedMoodboards.add(filename);
-            }
-            renderMoodboardChips();
-        }
-
-        function updateMoodboardCounter() {
-            const label = document.getElementById('mb-select-count');
-            if (selectedMoodboards.size === 0) {
-                label.textContent = 'All (Default)';
-            } else {
-                label.textContent = `${selectedMoodboards.size} Selected`;
-            }
         }
 
         function renderGarmentGallery() {
             const container = document.getElementById('garments-container');
             document.getElementById('sku-count-badge').textContent = `${cachedSkus.length} SKUs`;
-
-            if (cachedSkus.length === 0) {
+            if (!cachedSkus.length) {
                 container.innerHTML = `<div class="loading-state">No input garments found. Use the control panel to add a SKU.</div>`;
                 return;
             }
-
             container.innerHTML = cachedSkus.map(sku => `
                 <div class="sku-card">
                     <div class="sku-card-header">
-                        <div class="sku-card-title">
-                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 12h10m-5 5h5"></path></svg>
-                            ${sku.name}
-                        </div>
-                        <div style="display: flex; gap: 0.75rem; align-items: center;">
+                        <div class="sku-card-title">${escapeHtml(sku.name)}</div>
+                        <div style="display:flex; gap:0.75rem; align-items:center;">
                             <span class="counter-badge">${sku.image_count} Photos</span>
-                            <button class="btn-card-action primary" onclick="quickGenerateGarment('${sku.id}')">
-                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                                Generate Shots
-                            </button>
-                            <button class="btn-card-action" onclick="triggerAddGarmentPhoto('${sku.id}')">
-                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                                Add Photo
-                            </button>
+                            <button class="btn-card-action primary" onclick="quickGenerateGarment('${escapeJsString(sku.id)}')">Generate</button>
+                            <button class="btn-card-action" onclick="triggerAddGarmentPhoto('${escapeJsString(sku.id)}')">Add Photo</button>
                         </div>
                     </div>
                     <div class="thumb-grid">
                         ${sku.images.map(img => `
-                            <div class="thumb-card" onclick="openLightbox('${img.url}', '${sku.name} - ${img.filename}')">
-                                <img src="${img.url}" alt="${img.filename}">
+                            <div class="thumb-card" onclick="openLightbox('${escapeJsString(assetUrl(img.url))}', '${escapeJsString(`${sku.name} - ${img.filename}`)}')">
+                                <img src="${assetUrl(img.url)}" alt="${escapeHtml(img.filename)}" loading="lazy" onerror="handleImageError(this, 'Garment')">
+                                <div class="thumb-fallback">Garment preview unavailable</div>
                                 <div class="thumb-overlay">
-                                    <span style="font-size: 0.7rem; color: #fff;">${img.filename}</span>
-                                    <button class="btn-delete-icon" onclick="deleteGarmentPhoto(event, '${sku.id}', '${img.filename}')" title="Delete Photo">✕</button>
+                                    <span style="font-size:0.7rem; color:#fff;">${escapeHtml(img.filename)}</span>
+                                    <button class="btn-delete-icon" onclick="deleteGarmentPhoto(event, '${escapeJsString(sku.id)}', '${escapeJsString(img.filename)}')" title="Delete Photo">✕</button>
                                 </div>
                             </div>
                         `).join('')}
@@ -1577,25 +3311,551 @@
         function renderMoodboardGallery() {
             const grid = document.getElementById('moodboard-grid');
             document.getElementById('moodboard-count').textContent = `${cachedMoodboards.length} References`;
-            
-            if (cachedMoodboards.length === 0) {
+            if (!cachedMoodboards.length) {
                 grid.innerHTML = `<div class="loading-state">No moodboard images found. Upload pose references.</div>`;
                 return;
             }
-
             grid.innerHTML = cachedMoodboards.map(mb => `
-                <div class="thumb-card" style="aspect-ratio: 3/4;" onclick="openLightbox('${mb.url}', 'Moodboard - ${mb.filename}')">
-                    <img src="${mb.url}" alt="${mb.filename}">
-                    <div class="thumb-overlay">
-                        <span style="font-size: 0.7rem; color: #fff;">${mb.filename}</span>
-                        <button class="btn-delete-icon" onclick="deleteMoodboardPhoto(event, '${mb.filename}')" title="Delete Reference">✕</button>
+                <div class="moodboard-card">
+                    <div class="moodboard-media" onclick="openLightbox('${escapeJsString(assetUrl(mb.url))}', 'Moodboard - ${escapeJsString(mb.filename)}')">
+                        <img src="${assetUrl(mb.url)}" alt="${escapeHtml(mb.filename)}" loading="lazy" onerror="handleImageError(this, 'Moodboard')">
+                        <div class="thumb-fallback">Moodboard preview unavailable</div>
+                        <div class="thumb-overlay">
+                            <span style="font-size:0.7rem; color:#fff;">${escapeHtml(mb.filename)}</span>
+                        </div>
+                    </div>
+                    <div class="moodboard-card-body">
+                        <div class="moodboard-card-meta">
+                            <div class="moodboard-card-title">${escapeHtml(mb.filename.replace(/\.[^.]+$/, ''))}</div>
+                            <div class="moodboard-card-subtitle">Pose / studio reference</div>
+                        </div>
+                        <button class="btn-delete-icon" onclick="deleteMoodboardPhoto(event, '${escapeJsString(mb.filename)}')" title="Delete Reference">✕</button>
                     </div>
                 </div>
             `).join('');
         }
 
+        function buildRecipeThumbStack(images, label) {
+            const visibleImages = images.slice(0, 4);
+            return `
+                <div class="recipe-thumb-stack">
+                    ${visibleImages.map((image, index) => `
+                        <div class="recipe-thumb-mini" onmouseenter="scheduleSidebarPeek(this, '${escapeJsString(image.url)}', '${escapeJsString(stripExtension(image.filename))}', '${escapeJsString(label)}', '${escapeJsString(label)}')" onmouseleave="hideSidebarPeek()">
+                            <img src="${image.url}" alt="${escapeHtml(image.filename)}" loading="lazy" onerror="handleImageError(this, '${escapeJsString(label)}')">
+                            <div class="thumb-fallback">${escapeHtml(label)} preview unavailable</div>
+                            ${index === 3 && images.length > 4 ? `<div class="recipe-thumb-more">+${images.length - 4}</div>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function openRecipeSourceModal(kind) {
+            const context = getRecipeContext();
+            const images = kind === 'target' ? (context.targetImages || []) : (context.referenceImages || []);
+            if (!images.length) return;
+            const normalizedImages = images.map(image => ({
+                filename: image.filename,
+                url: image.url.startsWith('/api/') ? assetUrl(image.url) : image.url
+            }));
+            modalState = {
+                mode: 'source-gallery',
+                title: kind === 'target' ? 'Target Garment Sources' : 'Visual Direction References',
+                subtitle: kind === 'target'
+                    ? `${normalizedImages.length} garment source image${normalizedImages.length === 1 ? '' : 's'}`
+                    : `${normalizedImages.length} reference image${normalizedImages.length === 1 ? '' : 's'}`,
+                generatedImage: null,
+                targetImages: kind === 'target' ? normalizedImages : [],
+                referenceImages: kind === 'reference' ? normalizedImages : [],
+                missingReferenceNames: kind === 'reference' ? (context.missingReferenceNames || []) : [],
+                preview: {
+                    kind,
+                    index: 0
+                }
+            };
+            renderModal();
+        }
+
+        function renderWorkspaceRecipe() {
+            const recipe = document.getElementById('recipe-assembly');
+            const context = getRecipeContext();
+            const garment = context?.garment || null;
+            const selectedMoodboard = context?.moodboard || null;
+            const changeRows = context?.changeRows || [];
+            const targetImages = context?.targetImages || [];
+            const referenceImages = context?.referenceImages || [];
+            recipe.innerHTML = `
+                ${garment ? `
+                    <div class="recipe-card ${targetImages.length ? 'clickable' : ''}" ${targetImages.length ? `onclick="openRecipeSourceModal('target')"` : ''}>
+                        <div class="recipe-thumb" onmouseenter="${targetImages.length ? `scheduleSidebarPeek(this, '${escapeJsString(targetImages[0].url)}', '${escapeJsString(garment.name)}', 'Target garment source', 'Target')` : ''}" onmouseleave="${targetImages.length ? 'hideSidebarPeek()' : ''}">
+                            <img src="${assetUrl(garment.sample_image)}" alt="${escapeHtml(garment.name)}" loading="lazy" onerror="handleImageError(this, 'SKU')">
+                            <div class="thumb-fallback">SKU preview unavailable</div>
+                        </div>
+                        <div class="recipe-meta">
+                            <div class="recipe-label">Target Garment</div>
+                            <div class="recipe-name">${escapeHtml(garment.name)}</div>
+                            <div class="recipe-subtext">${context.mode === 'batch' ? `${context.sourceCount} source photo${context.sourceCount === 1 ? '' : 's'} • ${context.framing}` : `${garment.image_count} source photo${garment.image_count === 1 ? '' : 's'}`}</div>
+                        </div>
+                    </div>
+                ` : `
+                    <div class="recipe-card">
+                        <div class="recipe-thumb">
+                            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#0f172a; color:var(--accent-cyan); font-weight:800; font-size:0.8rem; text-align:center; padding:0.5rem;">ALL SKUs</div>
+                        </div>
+                        <div class="recipe-meta">
+                            <div class="recipe-label">Target Garment</div>
+                            <div class="recipe-name">${context.mode === 'batch' ? 'Active Batch' : 'Batch Generation'}</div>
+                            <div class="recipe-subtext">${context.garmentCount} garment${context.garmentCount === 1 ? '' : 's'} ${context.mode === 'batch' ? 'visible in this run' : 'selected'}</div>
+                        </div>
+                    </div>
+                `}
+                <div class="recipe-plus">+</div>
+                ${referenceImages.length ? `
+                    <div class="recipe-card clickable" onclick="openRecipeSourceModal('reference')">
+                        ${referenceImages.length > 1
+                            ? buildRecipeThumbStack(referenceImages, 'Moodboard')
+                            : `
+                                <div class="recipe-thumb" onmouseenter="scheduleSidebarPeek(this, '${escapeJsString(referenceImages[0].url)}', '${escapeJsString(stripExtension(referenceImages[0].filename))}', 'Visual direction reference', 'Moodboard')" onmouseleave="hideSidebarPeek()">
+                                    <img src="${referenceImages[0].url}" alt="${escapeHtml(referenceImages[0].filename)}" loading="lazy" onerror="handleImageError(this, 'Moodboard')">
+                                    <div class="thumb-fallback">Moodboard preview unavailable</div>
+                                </div>
+                            `
+                        }
+                        <div class="recipe-meta">
+                            <div class="recipe-label">Visual Direction</div>
+                            <div class="recipe-name">${escapeHtml(context.moodboardName)}</div>
+                            <div class="recipe-subtext">${context.mode === 'batch'
+                                ? `${referenceImages.length} reference${referenceImages.length === 1 ? '' : 's'} used in active batch${context.missingReferenceNames?.length ? ` • ${context.missingReferenceNames.length} unavailable` : ''}`
+                                : `${referenceImages.length} selected reference${referenceImages.length === 1 ? '' : 's'}`
+                            }</div>
+                        </div>
+                    </div>
+                ` : selectedMoodboard ? `
+                    <div class="recipe-card clickable" onclick="openRecipeSourceModal('reference')">
+                        <div class="recipe-thumb" onmouseenter="scheduleSidebarPeek(this, '${escapeJsString(assetUrl(selectedMoodboard.url))}', '${escapeJsString(stripExtension(selectedMoodboard.filename))}', 'Visual direction reference', 'Moodboard')" onmouseleave="hideSidebarPeek()">
+                            <img src="${assetUrl(selectedMoodboard.url)}" alt="${escapeHtml(selectedMoodboard.filename)}" loading="lazy" onerror="handleImageError(this, 'Moodboard')">
+                            <div class="thumb-fallback">Moodboard preview unavailable</div>
+                        </div>
+                        <div class="recipe-meta">
+                            <div class="recipe-label">Visual Direction</div>
+                            <div class="recipe-name">${escapeHtml(context.moodboardName)}</div>
+                            <div class="recipe-subtext">${context.mode === 'batch'
+                                ? `${context.moodboardCount || 1} reference${(context.moodboardCount || 1) === 1 ? '' : 's'} used in active batch${context.missingReferenceNames?.length ? ` • ${context.missingReferenceNames.length} unavailable` : ''}`
+                                : ((selectedMoodboards.size > 1 ? `${selectedMoodboards.size} selected references` : 'Primary reference'))
+                            }</div>
+                        </div>
+                    </div>
+                ` : `<div class="recipe-card"><div class="recipe-meta"><div class="recipe-name">${escapeHtml(context.moodboardName)}</div><div class="recipe-subtext">${context.mode === 'batch' ? `${context.moodboardCount || 0} references used in active batch${context.missingReferenceNames?.length ? ` • ${context.missingReferenceNames.length} unavailable` : ''}` : 'Select a moodboard to guide the generation'}</div></div></div>`}
+                <div class="recipe-arrow">→</div>
+                <div class="recipe-change-card">
+                    <div class="recipe-label">What Will Change</div>
+                    ${changeRows.map(([label, value]) => `
+                        <div class="recipe-change-row">
+                            <span>${escapeHtml(label)}</span>
+                            <span>${escapeHtml(value)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function buildResultCard(item, index) {
+            const imgUrl = getOutputImageUrl(item);
+            const itemPayload = serializeItem(item);
+            return `
+                <div class="result-card">
+                    <div class="result-card-media" onclick="openOutputLightbox('${escapeJsString(imgUrl)}', '${escapeJsString(item.sku_id)}', ${itemPayload})">
+                        <img src="${imgUrl}" alt="${escapeHtml(item.sku_id)}" loading="lazy" onerror="handleImageError(this, 'Output')">
+                        <div class="thumb-fallback">Generated preview unavailable</div>
+                        <div class="variation-badge">Variation ${index + 1}</div>
+                        <div class="badge-status ${item.status === 'AUTO_APPROVED' ? 'status-APPROVED' : 'status-FLAGGED'}">
+                            ${item.status === 'AUTO_APPROVED' ? 'AUTO APPROVED' : 'FLAGGED'}
+                        </div>
+                    </div>
+                    <div class="result-card-body">
+                        <div class="result-card-title">
+                            <div>
+                                <h4>${escapeHtml(item.sku_id)}</h4>
+                                <p>Inspired by ${escapeHtml((item.pose_source || 'Moodboard').replace(/\.[^.]+$/, ''))}</p>
+                            </div>
+                            <span class="framing-tag">${escapeHtml(item.framing || 'Catalog')}</span>
+                        </div>
+                        <div class="result-stats">
+                            <div><span>Model / Face</span><strong>${escapeHtml(controlSummaryLabel('model', item.controls?.model))}</strong></div>
+                            <div><span>Pose & Gesture</span><strong>${escapeHtml(controlSummaryLabel('pose', item.controls?.pose))}</strong></div>
+                            <div><span>Background</span><strong>${escapeHtml(controlSummaryLabel('background', item.controls?.background))}</strong></div>
+                            <div><span>Lighting</span><strong>AI Decides</strong></div>
+                            <div><span>Styling / Props</span><strong>${item.controls?.custom_override ? 'Custom' : 'Keep Original'}</strong></div>
+                            <div><span>Generated</span><strong>${escapeHtml(formatTimestamp(item.timestamp))}</strong></div>
+                        </div>
+                        <div class="result-actions">
+                            <button class="btn-card-action" onclick="openOutputLightbox('${escapeJsString(imgUrl)}', '${escapeJsString(item.sku_id)}', ${itemPayload})">View Recipe</button>
+                            <button class="btn-card-action" onclick="regenerateFromItem(${itemPayload})">Regenerate</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderWorkspaceResults() {
+            const batch = getActiveBatch();
+            const grid = document.getElementById('workspace-results-grid');
+            const subtitle = document.getElementById('workspace-results-subtitle');
+            if (pendingGeneration) {
+                subtitle.textContent = `${pendingGeneration.label} • ${pendingGeneration.numShots} variation${pendingGeneration.numShots === 1 ? '' : 's'} requested • in progress`;
+                grid.innerHTML = `
+                    <div class="generation-progress">
+                        <div class="generation-progress-panel">
+                            <div class="generation-progress-header">
+                                <div class="loader" style="display:block;"></div>
+                                <div class="generation-progress-copy">
+                                    <h4>${escapeHtml(generationProgressSteps[pendingGeneration.stepIndex].title)}</h4>
+                                    <p>${escapeHtml(generationProgressSteps[pendingGeneration.stepIndex].detail)}</p>
+                                </div>
+                            </div>
+                            <div class="generation-steps">
+                                ${generationProgressSteps.map((step, index) => {
+                                    const statusClass = index < pendingGeneration.stepIndex ? 'done' : (index === pendingGeneration.stepIndex ? 'active' : '');
+                                    const indicator = index < pendingGeneration.stepIndex ? '✓' : `${index + 1}`;
+                                    return `
+                                        <div class="generation-step ${statusClass}">
+                                            <div class="generation-step-indicator">${indicator}</div>
+                                            <div>
+                                                <strong>${escapeHtml(step.title)}</strong>
+                                                <span>${escapeHtml(step.detail)}</span>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                        <div class="generation-preview-panel">
+                            <div class="workspace-results-nav">
+                                <div class="workspace-results-nav-meta">Waiting for ${pendingGeneration.numShots} generated result${pendingGeneration.numShots === 1 ? '' : 's'}.</div>
+                            </div>
+                            <div class="generation-preview-grid">
+                                ${Array.from({ length: Math.min(3, pendingGeneration.numShots) }, (_, index) => `
+                                    <div class="generation-preview-card">
+                                        <div class="generation-preview-media"></div>
+                                        <div class="generation-preview-meta">
+                                            <div class="variation-badge" style="position:static; width:max-content;">Variation ${index + 1}</div>
+                                            <div class="generation-preview-line long"></div>
+                                            <div class="generation-preview-line medium"></div>
+                                            <div class="generation-preview-line short"></div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            if (!batch) {
+                subtitle.textContent = 'Run a generation to populate this workspace.';
+                grid.innerHTML = `<div class="loading-state">No generated results yet. Choose a garment and click Generate Images.</div>`;
+                return;
+            }
+            const visibleCount = getWorkspaceVisibleCount();
+            const totalPages = Math.max(1, Math.ceil(batch.items.length / visibleCount));
+            workspaceResultsPage = Math.min(workspaceResultsPage, totalPages - 1);
+            subtitle.textContent = `${batch.label} • ${batch.items.length} variation${batch.items.length === 1 ? '' : 's'} • ${formatTimestamp(batch.latestTimestamp)}`;
+            const orderedItems = batch.items
+                .slice()
+                .sort((a, b) => (a.shot_number || 0) - (b.shot_number || 0));
+            const pageItems = orderedItems.slice(
+                workspaceResultsPage * visibleCount,
+                workspaceResultsPage * visibleCount + visibleCount
+            );
+            grid.innerHTML = `
+                <div class="workspace-results-frame">
+                    <div class="workspace-results-track">
+                        ${pageItems.map((item, index) => `
+                            <div class="workspace-result-slide">
+                                ${buildResultCard(item, workspaceResultsPage * visibleCount + index)}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ${totalPages > 1 ? `
+                    <div class="workspace-results-nav">
+                        <div class="workspace-results-nav-meta">Showing ${workspaceResultsPage * visibleCount + 1}-${Math.min(batch.items.length, (workspaceResultsPage + 1) * visibleCount)} of ${batch.items.length}</div>
+                        <div class="workspace-results-nav-actions">
+                            <button class="carousel-arrow" onclick="moveWorkspaceResults(-1)" ${workspaceResultsPage === 0 ? 'disabled' : ''} aria-label="Previous results">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            </button>
+                            <button class="carousel-arrow" onclick="moveWorkspaceResults(1)" ${workspaceResultsPage >= totalPages - 1 ? 'disabled' : ''} aria-label="Next results">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        function renderBatchOverview() {
+            const strip = document.getElementById('batch-strip');
+            const subtitle = document.getElementById('batch-overview-subtitle');
+            if (pendingGeneration) {
+                subtitle.textContent = 'Current run in progress';
+                strip.innerHTML = `<div class="loading-state">The new batch card will appear here when generation finishes.</div>`;
+                return;
+            }
+            const groups = getBatchGroups(cachedOutputs);
+            subtitle.textContent = `${groups.length} batch${groups.length === 1 ? '' : 'es'} • ${new Set(cachedOutputs.map(item => item.sku_id)).size} garments`;
+            if (!groups.length) {
+                strip.innerHTML = `<div class="loading-state">Batch cards will appear here after generation.</div>`;
+                return;
+            }
+            strip.innerHTML = groups.slice(0, 6).map((group, index) => {
+                const preview = getOutputImageUrl(group.items[0]);
+                return `
+                    <div class="batch-pill ${group.id === activeBatchId ? 'active' : ''}" onclick="selectBatch('${escapeJsString(group.id)}')">
+                        <div class="batch-pill-thumb">
+                            <img src="${preview}" alt="${escapeHtml(group.label)}" loading="lazy" onerror="handleImageError(this, 'Batch')">
+                            <div class="thumb-fallback">Batch preview unavailable</div>
+                        </div>
+                        <div class="batch-pill-meta">
+                            <div class="batch-pill-title">${escapeHtml(group.label || `Batch ${index + 1}`)}</div>
+                            <div class="batch-pill-subtitle">${group.skuCount} SKU${group.skuCount === 1 ? '' : 's'} • ${group.moodCount} moodboard${group.moodCount === 1 ? '' : 's'}</div>
+                            <div class="batch-pill-footnote">${group.items.length} result${group.items.length === 1 ? '' : 's'}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderWorkspace() {
+            renderWorkspaceRecipe();
+            renderWorkspaceResults();
+            renderBatchOverview();
+        }
+
+        function setGalleryGrouping(mode, btn) {
+            galleryGrouping = mode;
+            document.querySelectorAll('#gallery-view-toggle button').forEach(button => button.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            renderGalleryView();
+        }
+
+        function filterOutputs(type, el) {
+            activeOutputFilter = type;
+            document.querySelectorAll('#gallery-view .filter-chip').forEach(chip => chip.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderGalleryView();
+        }
+
+        function renderGalleryView() {
+            const container = document.getElementById('gallery-groups');
+            const filtered = getFilteredOutputs();
+            document.getElementById('asset-count').textContent = `${filtered.length} Assets`;
+            if (!filtered.length) {
+                container.innerHTML = `<div class="loading-state">No generated assets match this filter.</div>`;
+                return;
+            }
+            const groups = galleryGrouping === 'sku' ? getSkuGroups(filtered) : getBatchGroups(filtered);
+            container.innerHTML = groups.map((group, index) => `
+                <div class="gallery-group">
+                    <div class="gallery-group-header">
+                        <div>
+                            <h3>${escapeHtml(group.label || (galleryGrouping === 'sku' ? group.id : `Batch ${index + 1}`))}</h3>
+                            <p>${galleryGrouping === 'sku'
+                                ? `${group.items.length} results across ${group.batchCount} batch${group.batchCount === 1 ? '' : 'es'}`
+                                : `${group.items.length} results • ${group.skuCount} SKU${group.skuCount === 1 ? '' : 's'} • ${formatTimestamp(group.latestTimestamp)}`
+                            }</p>
+                        </div>
+                        ${galleryGrouping === 'batch' ? `<button class="btn-card-action" onclick="selectBatch('${escapeJsString(group.id)}'); switchTab('workspace-view')">Open In Workspace</button>` : ''}
+                    </div>
+                    <div class="gallery-group-grid">
+                        ${group.items.map((item, itemIndex) => buildResultCard(item, itemIndex)).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function jumpToGallery(grouping = 'batch') {
+            galleryGrouping = grouping;
+            switchTab('gallery-view');
+            const buttons = document.querySelectorAll('#gallery-view-toggle button');
+            buttons.forEach(button => button.classList.remove('active'));
+            const activeButton = buttons[grouping === 'sku' ? 1 : 0];
+            if (activeButton) activeButton.classList.add('active');
+            renderGalleryView();
+        }
+
+        function selectBatch(batchId) {
+            activeBatchId = batchId;
+            workspaceResultsPage = 0;
+            renderWorkspaceRecipe();
+            renderWorkspaceResults();
+            renderBatchOverview();
+        }
+
+        function moveWorkspaceResults(delta) {
+            const batch = getActiveBatch();
+            if (!batch) return;
+            const totalPages = Math.max(1, Math.ceil(batch.items.length / getWorkspaceVisibleCount()));
+            workspaceResultsPage = Math.max(0, Math.min(totalPages - 1, workspaceResultsPage + delta));
+            renderWorkspaceResults();
+        }
+
+        function normalizeModalImages(images = []) {
+            return images.map(image => ({
+                filename: image.filename,
+                url: image.url && image.url.startsWith('/api/') ? assetUrl(image.url) : image.url
+            })).filter(image => image.url);
+        }
+
+        function getModalTargetImagesForItem(item) {
+            const direct = normalizeModalImages(item.source_assets?.target_images || []);
+            return direct.length ? direct : buildFallbackTargetImagesForSku(item.sku_id);
+        }
+
+        function getModalReferenceImagesForItem(item) {
+            const direct = normalizeModalImages(item.source_assets?.reference_images || []);
+            if (direct.length) return direct;
+            return buildFallbackReferenceImages([item.pose_source].filter(Boolean));
+        }
+
+        function getModalPreviewImage() {
+            if (!modalState) return null;
+            if (modalState.preview?.kind === 'generated') return modalState.generatedImage;
+            if (modalState.preview?.kind === 'target') return modalState.targetImages?.[modalState.preview.index] || null;
+            if (modalState.preview?.kind === 'reference') return modalState.referenceImages?.[modalState.preview.index] || null;
+            if (modalState.preview?.kind === 'simple') return modalState.simpleImage || null;
+            return modalState.generatedImage || modalState.targetImages?.[0] || modalState.referenceImages?.[0] || null;
+        }
+
+        function selectModalPreview(kind, index = 0) {
+            if (!modalState) return;
+            modalState.preview = { kind, index };
+            renderModal();
+        }
+
+        function renderModalSourceSection(title, kind, images = []) {
+            if (!images.length) return '';
+            return `
+                <div class="modal-source-section">
+                    <h4>${escapeHtml(title)}</h4>
+                    <div class="modal-source-grid">
+                        ${images.map((image, index) => `
+                            <div class="modal-source-thumb ${modalState.preview?.kind === kind && modalState.preview?.index === index ? 'active' : ''}" onclick="selectModalPreview('${kind}', ${index})">
+                                <img src="${image.url}" alt="${escapeHtml(image.filename)}" loading="lazy" onerror="handleImageError(this, '${escapeJsString(title)}')">
+                                <div class="thumb-fallback">${escapeHtml(title)} unavailable</div>
+                                <span>${escapeHtml(stripExtension(image.filename))}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderModal() {
+            const preview = getModalPreviewImage();
+            if (!modalState || !preview) return;
+
+            document.getElementById('modal-img').src = preview.url;
+            const previewLabel = modalState.preview?.kind === 'generated'
+                ? 'Generated Output'
+                : modalState.preview?.kind === 'target'
+                    ? 'Target Source'
+                    : modalState.preview?.kind === 'reference'
+                        ? 'Reference Source'
+                        : 'Preview';
+
+            const generatedBackButton = modalState.generatedImage && modalState.preview?.kind !== 'generated'
+                ? `<button class="modal-back-btn" onclick="selectModalPreview('generated', 0)">Back to Generated</button>`
+                : '';
+
+            const missingRefNote = modalState.missingReferenceNames?.length
+                ? `<div class="modal-note">${modalState.missingReferenceNames.length} reference image${modalState.missingReferenceNames.length === 1 ? '' : 's'} unavailable: ${escapeHtml(modalState.missingReferenceNames.map(stripExtension).join(', '))}</div>`
+                : '';
+
+            const statusBlock = modalState.status
+                ? `<div style="font-size:0.84rem; color:var(--text-muted); margin-top:4px;">Status: <strong style="color:${modalState.status === 'AUTO_APPROVED' ? '#10b981' : '#f43f5e'}">${escapeHtml(modalState.status)}</strong></div>`
+                : '';
+
+            const transferBlock = modalState.item ? `
+                <h4 style="margin-top:1.2rem; font-size:0.9rem; color:var(--accent-cyan);">Transfer Inputs</h4>
+                <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px; font-size:0.85rem;">
+                    <div><strong>Target Garment:</strong> ${escapeHtml(modalState.item.sku_id)}</div>
+                    <div><strong>Pose Reference:</strong> ${escapeHtml(modalState.item.pose_source || 'Auto')}</div>
+                    <div><strong>Framing:</strong> ${escapeHtml(modalState.item.framing || 'Catalog')}</div>
+                    <div><strong>Model / Face:</strong> ${escapeHtml(controlSummaryLabel('model', modalState.item.controls?.model))}</div>
+                    <div><strong>Pose & Gesture:</strong> ${escapeHtml(controlSummaryLabel('pose', modalState.item.controls?.pose))}</div>
+                    <div><strong>Background:</strong> ${escapeHtml(controlSummaryLabel('background', modalState.item.controls?.background))}</div>
+                    <div><strong>Resolution:</strong> ${escapeHtml(controlSummaryLabel('resolution', modalState.item.controls?.resolution))}</div>
+                </div>
+            ` : '';
+
+            const qc = modalState.item?.qc_report || {};
+            const qcBlock = modalState.item ? `
+                <h4 style="margin-top:1.2rem; font-size:0.9rem; color:var(--accent-purple);">Quality Gate</h4>
+                <div style="display:flex; flex-direction:column; gap:6px; margin-top:8px; font-size:0.85rem;">
+                    <div><strong>Identity Check:</strong> ${qc.is_same_garment_or_valid_piece ? 'Passed' : 'Failed'}</div>
+                    <div><strong>Composite Score:</strong> ${qc.composite_quality_score ?? 'N/A'}</div>
+                    <div><strong>Defects:</strong> ${qc.detected_defects?.length ? escapeHtml(qc.detected_defects.join(', ')) : 'None'}</div>
+                </div>
+            ` : '';
+
+            document.getElementById('modal-sidebar').innerHTML = `
+                <h3 style="font-size:1.2rem; font-weight:700; color:var(--accent-cyan);">${escapeHtml(modalState.title)}</h3>
+                <div style="font-size:0.84rem; color:var(--text-muted); margin-top:4px;">${escapeHtml(modalState.subtitle || '')}</div>
+                ${statusBlock}
+                <div class="modal-preview-label">${escapeHtml(previewLabel)} • ${escapeHtml(stripExtension(preview.filename || previewLabel))}</div>
+                ${generatedBackButton}
+                ${renderModalSourceSection('Target Sources', 'target', modalState.targetImages || [])}
+                ${renderModalSourceSection('Reference Sources', 'reference', modalState.referenceImages || [])}
+                ${missingRefNote}
+                ${transferBlock}
+                ${qcBlock}
+            `;
+            document.getElementById('lightbox-modal').style.display = 'flex';
+        }
+
+        function openLightbox(url, title) {
+            modalState = {
+                mode: 'simple',
+                title,
+                subtitle: 'Source image asset stored in studio repository.',
+                simpleImage: { url, filename: title },
+                targetImages: [],
+                referenceImages: [],
+                missingReferenceNames: [],
+                preview: { kind: 'simple', index: 0 }
+            };
+            renderModal();
+        }
+
+        function openOutputLightbox(url, skuId, item) {
+            modalState = {
+                mode: 'output',
+                title: `${skuId} • Shot ${item.shot_number}`,
+                subtitle: `${item.batch_label || 'Generation Batch'} • ${formatTimestamp(item.timestamp)}`,
+                status: item.status,
+                item,
+                generatedImage: {
+                    url,
+                    filename: `${skuId}_shot_${item.shot_number}`
+                },
+                targetImages: getModalTargetImagesForItem(item),
+                referenceImages: getModalReferenceImagesForItem(item),
+                missingReferenceNames: item.source_assets?.missing_reference_names || [],
+                preview: { kind: 'generated', index: 0 }
+            };
+            renderModal();
+        }
+
+        function closeModal() {
+            modalState = null;
+            document.getElementById('lightbox-modal').style.display = 'none';
+        }
+
         function quickGenerateGarment(skuId) {
-            selectPickerGarment(skuId);
+            selectedGarmentSku = skuId;
+            renderGarmentPickerCarousel();
+            renderWorkspaceRecipe();
+            switchTab('workspace-view');
             runGeneration();
         }
 
@@ -1603,306 +3863,210 @@
             currentTargetSkuUpload = skuId;
             const input = document.getElementById('sku-specific-file-input');
             input.onchange = async () => {
-                if (!input.files || input.files.length === 0) return;
+                if (!input.files || !input.files.length) return;
                 const formData = new FormData();
-                formData.append("sku_name", currentTargetSkuUpload);
-                for (let f of input.files) {
-                    formData.append("files", f);
-                }
+                formData.append('sku_name', currentTargetSkuUpload);
+                for (const file of input.files) formData.append('files', file);
                 try {
-                    const res = await fetch('/api/upload/garment', { method: 'POST', body: formData });
-                    const data = await res.json();
+                    await fetch('/api/upload/garment', { method: 'POST', body: formData });
                     await loadInitialData();
                 } catch (err) {
-                    alert("Upload error: " + err);
+                    alert(`Upload error: ${err}`);
                 }
             };
             input.click();
         }
 
         async function handleNewGarmentUpload(input) {
-            if (!input.files || input.files.length === 0) return;
-            const skuName = document.getElementById('new-sku-name').value || "GARMENT_NEW";
-            
+            if (!input.files || !input.files.length) return;
+            const skuName = prompt('SKU name', 'GARMENT_NEW') || 'GARMENT_NEW';
             const formData = new FormData();
-            formData.append("sku_name", skuName);
-            for (let f of input.files) {
-                formData.append("files", f);
-            }
-
+            formData.append('sku_name', skuName);
+            for (const file of input.files) formData.append('files', file);
             try {
                 const res = await fetch('/api/upload/garment', { method: 'POST', body: formData });
                 const data = await res.json();
                 await loadInitialData();
-                selectPickerGarment(data.sku_id);
-                switchTab('garments-view', document.querySelectorAll('.tab-btn')[1]);
+                selectedGarmentSku = data.sku_id;
+                renderGarmentPickerCarousel();
+                switchTab('garments-view');
             } catch (err) {
-                alert("Upload error: " + err);
+                alert(`Upload error: ${err}`);
             }
         }
 
         async function handleMoodboardUpload(input) {
-            if (!input.files || input.files.length === 0) return;
+            if (!input.files || !input.files.length) return;
             const formData = new FormData();
-            for (let f of input.files) {
-                formData.append("files", f);
-            }
-
+            for (const file of input.files) formData.append('files', file);
             try {
-                const res = await fetch('/api/upload/moodboard', { method: 'POST', body: formData });
-                const data = await res.json();
+                await fetch('/api/upload/moodboard', { method: 'POST', body: formData });
                 await loadInitialData();
-                switchTab('moodboards-view', document.querySelectorAll('.tab-btn')[2]);
+                switchTab('moodboards-view');
             } catch (err) {
-                alert("Upload error: " + err);
+                alert(`Upload error: ${err}`);
             }
         }
 
-        async function deleteGarmentPhoto(e, skuId, filename) {
-            e.stopPropagation();
+        async function deleteGarmentPhoto(event, skuId, filename) {
+            event.stopPropagation();
             if (!confirm(`Delete photo '${filename}' from SKU '${skuId}'?`)) return;
-
             try {
-                const res = await fetch('/api/delete/garment_photo', {
+                await fetch('/api/delete/garment_photo', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sku_id: skuId, filename: filename })
+                    body: JSON.stringify({ sku_id: skuId, filename })
                 });
                 await loadInitialData();
             } catch (err) {
-                alert("Delete error: " + err);
+                alert(`Delete error: ${err}`);
             }
         }
 
-        async function deleteMoodboardPhoto(e, filename) {
-            e.stopPropagation();
+        async function deleteMoodboardPhoto(event, filename) {
+            event.stopPropagation();
             if (!confirm(`Delete moodboard reference '${filename}'?`)) return;
-
             try {
-                const res = await fetch('/api/delete/moodboard_photo', {
+                await fetch('/api/delete/moodboard_photo', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ filename: filename })
+                    body: JSON.stringify({ filename })
                 });
                 await loadInitialData();
             } catch (err) {
-                alert("Delete error: " + err);
+                alert(`Delete error: ${err}`);
             }
         }
 
         async function refreshSummary() {
             const res = await fetch('/api/summary');
             cachedOutputs = await res.json();
-            renderOutputs();
-        }
-
-        function filterOutputs(type, el) {
-            activeOutputFilter = type;
-            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-            renderOutputs();
-        }
-
-        function renderOutputs() {
-            const grid = document.getElementById('grid-cards');
-            let data = cachedOutputs;
-            
-            if (activeOutputFilter === 'AUTO_APPROVED') {
-                data = data.filter(i => i.status === 'AUTO_APPROVED');
-            } else if (activeOutputFilter === 'FLAGGED') {
-                data = data.filter(i => i.status !== 'AUTO_APPROVED');
+            if (!activeBatchId && cachedOutputs.length > 0) {
+                const latest = getBatchGroups(cachedOutputs)[0];
+                activeBatchId = latest?.id || '';
             }
-
-            document.getElementById('asset-count').textContent = `${data.length} Assets`;
-            
-            if (data.length === 0) {
-                grid.innerHTML = `<div class="loading-state">No generated assets match this filter.</div>`;
-                return;
-            }
-
-            const timestamp = new Date().getTime();
-
-            grid.innerHTML = data.map(item => {
-                const qc = item.qc_report || {};
-                const baseImgUrl = item.final_image_path ? `/api/image/output/${item.final_image_path.split('/output/')[1]}` : '';
-                const imgUrl = baseImgUrl ? `${baseImgUrl}?t=${timestamp}` : '';
-                const isApproved = item.status === 'AUTO_APPROVED';
-                const formattedTime = item.timestamp ? item.timestamp.replace(/_/g, ' ') : 'Catalog Shot';
-                
-                return `
-                    <div class="asset-card">
-                        <div class="card-image-wrap" onclick="openOutputLightbox('${imgUrl}', '${item.sku_id}', ${JSON.stringify(item).replace(/"/g, '&quot;')})">
-                            <img src="${imgUrl}" alt="${item.sku_id}">
-                            <div class="badge-status ${isApproved ? 'status-APPROVED' : 'status-FLAGGED'}">
-                                ${isApproved ? 'AUTO APPROVED' : 'FLAGGED'}
-                            </div>
-                        </div>
-                        <div class="card-details">
-                            <div class="card-title">
-                                <span>${item.sku_id}</span>
-                                <span class="framing-tag">${item.framing || 'Full Body'}</span>
-                            </div>
-                            <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 10px; font-size: 0.8rem; color: var(--text-muted);">
-                                <div><strong>Pose Reference:</strong> ${item.pose_source || 'Catalog Reference'}</div>
-                                <div><strong>Generated At:</strong> ${formattedTime}</div>
-                                <div><strong>Attempts:</strong> ${item.attempts || 1} Run</div>
-                            </div>
-                            <button onclick="openOutputLightbox('${imgUrl}', '${item.sku_id}', ${JSON.stringify(item).replace(/"/g, '&quot;')})" style="margin-top: 12px; width: 100%; padding: 8px; background: rgba(0, 242, 254, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">
-                                View Full Source Details
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            renderWorkspace();
+            renderGalleryView();
         }
-
-        function openLightbox(url, title) {
-            document.getElementById('modal-img').src = url;
-            document.getElementById('modal-sidebar').innerHTML = `
-                <h3 style="font-size: 1.1rem; font-weight: 700;">${title}</h3>
-                <div style="font-size: 0.85rem; color: var(--text-muted);">Source image asset stored in studio repository.</div>
-            `;
-            document.getElementById('lightbox-modal').style.display = 'flex';
-        }
-
-        function openOutputLightbox(url, skuId, item) {
-            const qc = item.qc_report || {};
-            const formattedTime = item.timestamp ? item.timestamp.replace(/_/g, ' ') : 'Catalog Generation';
-            
-            document.getElementById('modal-img').src = url;
-            document.getElementById('modal-sidebar').innerHTML = `
-                <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--accent-cyan);">${skuId} - Shot ${item.shot_number}</h3>
-                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Generation Timestamp: <strong>${formattedTime}</strong></div>
-                <div style="font-size: 0.85rem; color: var(--text-muted);">Pipeline Status: <strong style="color: ${item.status === 'AUTO_APPROVED' ? '#10b981' : '#f43f5e'}">${item.status}</strong></div>
-                
-                <h4 style="margin-top: 1.2rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-cyan); border-bottom: 1px solid var(--card-border); padding-bottom: 4px;">Input & Style Sources</h4>
-                <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px; font-size: 0.85rem; color: var(--text-main);">
-                    <div><strong>Target Garment SKU:</strong> ${skuId}</div>
-                    <div><strong>Camera Framing:</strong> ${item.framing}</div>
-                    <div><strong>Moodboard Pose Reference:</strong> <span style="color: var(--accent-blue);">${item.pose_source}</span></div>
-                    <div><strong>Pipeline Attempts:</strong> ${item.attempts || 1} Retry(s)</div>
-                </div>
-
-                <h4 style="margin-top: 1.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-purple); border-bottom: 1px solid var(--card-border); padding-bottom: 4px;">Quality Sanity Checks</h4>
-                <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px; font-size: 0.85rem;">
-                    <div><strong>Layer 1 Binary Identity:</strong> <span style="color: ${qc.is_same_garment_or_valid_piece ? '#10b981' : '#f43f5e'}; font-weight: 700;">${qc.is_same_garment_or_valid_piece ? 'PASSED (Match)' : 'FAILED'}</span></div>
-                    <div><strong>Garment Type Match:</strong> ${qc.garment_type_match === 1 ? 'Exact Match' : 'High Consistency'}</div>
-                    <div><strong>Detected Defects:</strong> ${qc.detected_defects && qc.detected_defects.length > 0 ? qc.detected_defects.join(', ') : 'None'}</div>
-                </div>
-            `;
-            document.getElementById('lightbox-modal').style.display = 'flex';
-        }
-
-        function closeModal(e) {
-            document.getElementById('lightbox-modal').style.display = 'none';
-        }
-
-        // Transfer Controls state
-        const transferControls = {
-            model: 'auto',
-            pose: 'auto',
-            background: 'auto',
-            resolution: '2048x2048',
-            custom_override: ''
-        };
 
         function setSegment(controlId, value, btn) {
             const container = document.getElementById(controlId);
-            container.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
+            container.querySelectorAll('.segment-btn').forEach(button => button.classList.remove('active'));
             btn.classList.add('active');
-            
             if (controlId === 'ctrl-model') transferControls.model = value;
             if (controlId === 'ctrl-pose') transferControls.pose = value;
             if (controlId === 'ctrl-bg') transferControls.background = value;
+            renderWorkspaceRecipe();
         }
 
         function setResolution(value, btn) {
             const container = document.getElementById('ctrl-res');
-            container.querySelectorAll('.res-btn').forEach(b => b.classList.remove('active'));
+            container.querySelectorAll('.res-btn').forEach(button => button.classList.remove('active'));
             btn.classList.add('active');
             transferControls.resolution = value;
+            renderWorkspaceRecipe();
+        }
+
+        function downloadFile(url, filename) {
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = filename;
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.remove();
+        }
+
+        function downloadActiveBatch() {
+            const batch = getActiveBatch();
+            if (!batch || !batch.items.length) {
+                alert('No batch is available to save yet.');
+                return;
+            }
+            batch.items.forEach((item, index) => {
+                setTimeout(() => {
+                    downloadFile(getOutputImageUrl(item), `${item.sku_id}_${item.batch_id || 'batch'}_shot${item.shot_number || index + 1}.png`);
+                }, index * 180);
+            });
+        }
+
+        function regenerateFromItem(item) {
+            selectedGarmentSku = item.sku_id;
+            if (item.pose_source) selectedMoodboards = new Set([item.pose_source]);
+            renderGarmentPickerCarousel();
+            renderMoodboardChips();
+            renderWorkspaceRecipe();
+            switchTab('workspace-view');
+            if (confirm(`Regenerate ${item.sku_id} using ${item.pose_source || 'the current moodboard selection'}?`)) {
+                runGeneration();
+            }
         }
 
         async function loadAdminAnalytics() {
             try {
                 const res = await fetch('/api/admin/stats');
                 const data = await res.json();
-                
                 document.getElementById('stat-clicks').textContent = data.generate_click_count || 0;
                 document.getElementById('stat-generated-total').textContent = data.total_images_generated || 0;
-                
                 const total = data.total_images_generated || 0;
                 const approved = data.auto_approved_count || 0;
                 const flagged = data.flagged_count || 0;
                 const passRate = total > 0 ? Math.round((approved / total) * 100) : 0;
-                
                 document.getElementById('stat-pass-rate').textContent = `${passRate}%`;
                 document.getElementById('stat-qc-breakdown').textContent = `${approved} Approved / ${flagged} Flagged`;
                 document.getElementById('stat-inventory').textContent = `${data.total_skus || 0} / ${data.total_moodboards || 0}`;
-
-                // Resolution Breakdown render
-                const resCounts = data.resolution_counts || {};
-                const resHtml = Object.entries(resCounts).map(([res, count]) => {
+                document.getElementById('admin-res-breakdown').innerHTML = Object.entries(data.resolution_counts || {}).map(([res, count]) => {
                     const pct = total > 0 ? Math.round((count / total) * 100) : 0;
                     return `
                         <div>
-                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
-                                <span><strong>${res === '1024x1024' ? '1K (1024px)' : res === '4096x4096' ? '4K High-Res' : '2K Default (2048px)'}</strong></span>
-                                <span style="color: var(--accent-cyan); font-weight: 700;">${count} shots (${pct}%)</span>
+                            <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:4px;">
+                                <span><strong>${escapeHtml(controlSummaryLabel('resolution', res))}</strong></span>
+                                <span style="color:var(--accent-cyan); font-weight:700;">${count} shots (${pct}%)</span>
                             </div>
-                            <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden;">
-                                <div style="width: ${pct}%; height: 100%; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue)); border-radius: 4px;"></div>
+                            <div style="width:100%; height:8px; background:rgba(255,255,255,0.08); border-radius:4px; overflow:hidden;">
+                                <div style="width:${pct}%; height:100%; background:linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));"></div>
                             </div>
                         </div>
                     `;
-                }).join('');
-                document.getElementById('admin-res-breakdown').innerHTML = resHtml || '<div style="font-size:0.8rem; color:var(--text-muted);">No resolution data recorded yet.</div>';
-
-                // QC Ratio render
+                }).join('') || '<div style="font-size:0.8rem; color:var(--text-muted);">No resolution data recorded yet.</div>';
                 const appPct = total > 0 ? Math.round((approved / total) * 100) : 0;
-                const flagPct = total > 0 ? (100 - appPct) : 0;
+                const flagPct = total > 0 ? 100 - appPct : 0;
                 document.getElementById('admin-qc-ratio').innerHTML = `
                     <div>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px;">
-                            <span style="color: #10b981; font-weight: 700;">Auto Approved: ${approved} (${appPct}%)</span>
-                            <span style="color: #f43f5e; font-weight: 700;">Flagged Review: ${flagged} (${flagPct}%)</span>
+                        <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:6px;">
+                            <span style="color:#10b981; font-weight:700;">Auto Approved: ${approved} (${appPct}%)</span>
+                            <span style="color:#f43f5e; font-weight:700;">Flagged Review: ${flagged} (${flagPct}%)</span>
                         </div>
-                        <div style="width: 100%; height: 12px; background: #f43f5e; border-radius: 6px; overflow: hidden; display: flex;">
-                            <div style="width: ${appPct}%; height: 100%; background: #10b981;"></div>
+                        <div style="width:100%; height:12px; background:#f43f5e; border-radius:6px; overflow:hidden; display:flex;">
+                            <div style="width:${appPct}%; height:100%; background:#10b981;"></div>
                         </div>
                     </div>
                 `;
-
-                // Activity Log Table render
-                const tbody = document.getElementById('admin-activity-tbody');
                 const activity = data.activity_log || [];
-                if (activity.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding: 1.5rem;">No generation runs recorded yet. Click "Generate Selected Shots" to launch pipeline.</td></tr>`;
-                } else {
-                    tbody.innerHTML = activity.map(item => `
+                document.getElementById('admin-activity-tbody').innerHTML = activity.length
+                    ? activity.map(item => `
                         <tr>
-                            <td style="color: var(--text-muted); font-size: 0.8rem;">${item.timestamp}</td>
-                            <td><strong style="color: var(--accent-cyan);">${item.sku_id}</strong></td>
-                            <td>${item.requested_shots} shots</td>
-                            <td>${item.generated_shots} rendered</td>
-                            <td><span class="framing-tag">${item.resolution}</span></td>
-                            <td style="color: var(--text-muted); font-size: 0.8rem;">${item.custom_override || 'None'}</td>
-                            <td><span style="color: #10b981; font-weight: 700;">${item.status}</span></td>
+                            <td style="color:var(--text-muted); font-size:0.8rem;">${escapeHtml(item.timestamp)}</td>
+                            <td><strong style="color:var(--accent-cyan);">${escapeHtml(item.batch_label || item.sku_id)}</strong></td>
+                            <td>${escapeHtml(item.requested_shots)} shots</td>
+                            <td>${escapeHtml(item.generated_shots)} rendered</td>
+                            <td><span class="framing-tag">${escapeHtml(item.resolution)}</span></td>
+                            <td style="color:var(--text-muted); font-size:0.8rem;">${escapeHtml(item.custom_override || 'None')}</td>
+                            <td><span style="color:#10b981; font-weight:700;">${escapeHtml(item.status)}</span></td>
                         </tr>
-                    `).join('');
-                }
+                    `).join('')
+                    : `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No generation runs recorded yet.</td></tr>`;
             } catch (err) {
-                console.error("Failed loading admin stats:", err);
+                console.error('Failed loading admin stats:', err);
             }
         }
 
         async function resetAdminAnalytics() {
-            if (!confirm("Are you sure you want to reset generate click counts and activity logs?")) return;
+            if (!confirm('Are you sure you want to reset generate click counts and activity logs?')) return;
             try {
                 await fetch('/api/admin/reset', { method: 'POST' });
                 await loadAdminAnalytics();
             } catch (err) {
-                alert("Reset failed: " + err);
+                alert(`Reset failed: ${err}`);
             }
         }
 
@@ -1910,31 +4074,47 @@
             const btn = document.getElementById('btn-generate');
             const loader = document.getElementById('loader');
             const btnText = document.getElementById('btn-text');
-            const numShots = document.getElementById('shot-count').value;
-            const overrideVal = document.getElementById('ctrl-override').value;
-            transferControls.custom_override = overrideVal ? overrideVal.trim() : null;
-
+            transferControls.custom_override = (document.getElementById('ctrl-override').value || '').trim() || null;
+            const requestedShots = parseInt(document.getElementById('shot-count').value, 10);
+            const selectedMoodboardList = Array.from(selectedMoodboards);
+            const pendingLabel = `${selectedGarmentSku || 'ALL_SKUS'} x ${(selectedMoodboardList[0] || 'Auto Moodboard').replace(/\.[^.]+$/, '')}`;
             btn.disabled = true;
             loader.style.display = 'block';
             btnText.textContent = 'Orchestrating Pipeline...';
-
+            startPendingGeneration({
+                skuId: selectedGarmentSku,
+                moodboards: selectedMoodboardList,
+                controls: cloneTransferControls(),
+                numShots: requestedShots,
+                label: pendingLabel
+            });
+            switchTab('workspace-view');
+            renderWorkspace();
             try {
                 const res = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         sku_id: selectedGarmentSku,
-                        num_shots: parseInt(numShots),
-                        moodboards: Array.from(selectedMoodboards),
+                        num_shots: requestedShots,
+                        moodboards: selectedMoodboardList,
                         controls: transferControls
                     })
                 });
-                await refreshSummary();
+                const data = await res.json();
+                clearPendingGeneration();
+                cachedOutputs = data.results || [];
+                activeBatchId = data.batch_id || activeBatchId;
+                workspaceResultsPage = 0;
+                assetRevision = Date.now();
+                renderWorkspace();
+                renderGalleryView();
                 await loadAdminAnalytics();
-                const generatedTabBtn = document.querySelector('.nav-tabs .tab-btn');
-                switchTab('outputs-view', generatedTabBtn);
+                switchTab('workspace-view');
             } catch (err) {
-                alert("Generation error: " + err);
+                clearPendingGeneration();
+                renderWorkspace();
+                alert(`Generation error: ${err}`);
             } finally {
                 btn.disabled = false;
                 loader.style.display = 'none';
@@ -1943,6 +4123,13 @@
         }
 
         window.onload = loadInitialData;
+        window.addEventListener('resize', () => renderWorkspaceResults());
+        window.addEventListener('resize', () => {
+            if (sidebarPeekAnchor) positionSidebarPeek(sidebarPeekAnchor);
+        });
+        window.addEventListener('scroll', () => {
+            if (sidebarPeekAnchor) hideSidebarPeek();
+        }, true);
     </script>
 </body>
 </html>

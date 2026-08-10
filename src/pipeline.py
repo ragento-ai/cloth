@@ -34,7 +34,9 @@ class PipelineManager:
         moodboard_image_paths: List[Path],
         shot_plan: ShotPlan,
         output_dir: Path = None,
-        controls: Any = None
+        controls: Any = None,
+        batch_id: str = None,
+        batch_label: str = None,
     ) -> Dict[str, Any]:
         """Runs complete generation, QC, and routing pipeline for a single planned shot."""
 
@@ -113,6 +115,8 @@ class PipelineManager:
             logger.warning(f"SKU {sku_id} ({shot_tag}) FLAGGED FOR HUMAN REVIEW and saved to {dest_img}")
 
         return {
+            "batch_id": batch_id,
+            "batch_label": batch_label,
             "sku_id": sku_id,
             "shot_number": shot_plan.shot_number,
             "timestamp": timestamp_str,
@@ -138,7 +142,9 @@ class PipelineManager:
         product_image_paths: List[Path],
         moodboard_image_paths: List[Path],
         requested_num_shots: int = 3,
-        controls: Any = None
+        controls: Any = None,
+        batch_id: str = None,
+        batch_label: str = None,
     ) -> List[Dict[str, Any]]:
         """Uses Gemini 3.6 Flash to plan N catalog shots and executes multi-pose generation."""
 
@@ -156,7 +162,9 @@ class PipelineManager:
                 product_image_paths=product_image_paths,
                 moodboard_image_paths=moodboard_image_paths,
                 shot_plan=plan,
-                controls=controls
+                controls=controls,
+                batch_id=batch_id,
+                batch_label=batch_label,
             )
             results.append(res)
         return results
