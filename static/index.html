@@ -2213,7 +2213,7 @@
                     <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
                     Moodboards
                 </button>
-                <button class="tab-btn" data-view="admin-view" onclick="switchTab('admin-view', this)">
+                <button id="admin-tab-btn" class="tab-btn" data-view="admin-view" onclick="switchTab('admin-view', this)" style="display: none;">
                     <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     Admin
                 </button>
@@ -2677,6 +2677,9 @@
             custom_override: ''
         };
 
+        const STUDIO_PASSWORD = 'ragento.ai';
+        const ADMIN_PASSWORD = 'AdminKSSLA@ragento.ai';
+
         function assetUrl(url, params = null) {
             if (!url) return '';
             const absolute = new URL(encodeURI(url), window.location.origin);
@@ -2870,11 +2873,34 @@
             return item?.source_assets?.primary_reference_image || item?.source_assets?.reference_images?.[0] || null;
         }
 
+        function getSessionRole() {
+            return sessionStorage.getItem('ragento_role') || 'viewer';
+        }
+
+        function hasAdminAccess() {
+            return getSessionRole() === 'admin';
+        }
+
+        function updateAdminAccessUI() {
+            const adminTabBtn = document.getElementById('admin-tab-btn');
+            const adminView = document.getElementById('admin-view');
+            const allowAdmin = hasAdminAccess();
+
+            if (adminTabBtn) {
+                adminTabBtn.style.display = allowAdmin ? '' : 'none';
+            }
+
+            if (adminView && !allowAdmin && adminView.classList.contains('active')) {
+                switchTab('workspace-view');
+            }
+        }
+
         function checkAuthentication() {
             const isAuthed = sessionStorage.getItem('ragento_auth');
             const overlay = document.getElementById('password-modal-overlay');
             if (isAuthed === 'true') {
                 overlay.style.display = 'none';
+                updateAdminAccessUI();
             } else {
                 overlay.style.display = 'flex';
                 document.getElementById('auth-pass-input').focus();
@@ -2884,10 +2910,14 @@
         function verifyStudioPassword() {
             const passInput = document.getElementById('auth-pass-input');
             const errorMsg = document.getElementById('auth-error-msg');
-            if (passInput.value.trim() === 'ragento.ai') {
+            const enteredPassword = passInput.value.trim();
+            if (enteredPassword === STUDIO_PASSWORD || enteredPassword === ADMIN_PASSWORD) {
                 sessionStorage.setItem('ragento_auth', 'true');
+                sessionStorage.setItem('ragento_role', enteredPassword === ADMIN_PASSWORD ? 'admin' : 'viewer');
                 errorMsg.style.display = 'none';
+                passInput.style.borderColor = '';
                 document.getElementById('password-modal-overlay').style.display = 'none';
+                updateAdminAccessUI();
             } else {
                 errorMsg.style.display = 'block';
                 passInput.style.borderColor = '#f43f5e';
@@ -2896,6 +2926,9 @@
         }
 
         function switchTab(viewId, btn = null) {
+            if (viewId === 'admin-view' && !hasAdminAccess()) {
+                return;
+            }
             document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
