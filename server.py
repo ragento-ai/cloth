@@ -637,7 +637,7 @@ def get_admin_analytics():
     # Resolution breakdown
     res_counts = {"1024x1024": 0, "2048x2048": 0, "4096x4096": 0}
     for item in summary_data:
-        res = item.get("controls", {}).get("resolution", "2048x2048")
+        res = item.get("controls", {}).get("resolution", "4096x4096")
         res_counts[res] = res_counts.get(res, 0) + 1
 
     # SKU and Moodboard counts
@@ -735,7 +735,7 @@ def trigger_generation():
         background=controls_raw.get("background", "auto"),
         pose=controls_raw.get("pose", "auto"),
         model=controls_raw.get("model", "auto"),
-        resolution=controls_raw.get("resolution", "2048x2048"),
+        resolution=controls_raw.get("resolution", "4096x4096"),
         custom_override=controls_raw.get("custom_override", None)
     )
     

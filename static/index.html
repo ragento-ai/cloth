@@ -2354,8 +2354,8 @@
                     <label for="ctrl-res" style="font-size: 0.68rem;">Output Resolution</label>
                     <div class="resolution-grid" id="ctrl-res">
                         <button class="res-btn" data-val="1024x1024" onclick="setResolution('1024x1024', this)">1K (1024px)</button>
-                        <button class="res-btn active" data-val="2048x2048" onclick="setResolution('2048x2048', this)">2K (Default)</button>
-                        <button class="res-btn" data-val="4096x4096" onclick="setResolution('4096x4096', this)">4K High-Res</button>
+                        <button class="res-btn" data-val="2048x2048" onclick="setResolution('2048x2048', this)">2K Standard</button>
+                        <button class="res-btn active" data-val="4096x4096" onclick="setResolution('4096x4096', this)">4K (Default)</button>
                     </div>
                 </div>
             </div>
@@ -2697,7 +2697,7 @@
             model: 'auto',
             pose: 'auto',
             background: 'auto',
-            resolution: '2048x2048',
+            resolution: '4096x4096',
             custom_override: ''
         };
 

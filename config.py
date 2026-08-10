@@ -47,7 +47,7 @@ class Settings:
     
     # Execution Settings
     MAX_RETRIES: int = 2
-    OUTPUT_RESOLUTION: str = "2048x2048"
+    OUTPUT_RESOLUTION: str = "4096x4096"
 
     @property
     def VERTEX_CREDENTIALS_PATH(self) -> Path:
