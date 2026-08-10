@@ -75,7 +75,7 @@ gcloud compute ssh "$INSTANCE_NAME" \
   --tunnel-through-iap \
   --command="
 set -euo pipefail
-if [ -f '/etc/letsencrypt/live/${DOMAIN}/fullchain.pem' ] && [ -f '/etc/letsencrypt/live/${DOMAIN}/privkey.pem' ]; then
+if sudo test -f '/etc/letsencrypt/live/${DOMAIN}/fullchain.pem' && sudo test -f '/etc/letsencrypt/live/${DOMAIN}/privkey.pem'; then
 sudo tee /etc/nginx/sites-available/${DOMAIN} >/dev/null <<EOF
 server {
     listen 80;
