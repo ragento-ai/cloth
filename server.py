@@ -7,11 +7,14 @@ import io
 import json
 import hashlib
 import logging
+import datetime
+import fcntl
 from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory, send_file
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from PIL import Image, ImageOps
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
 from config import settings
 from models import TransferControls
@@ -32,6 +35,27 @@ pipeline = None
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp'}
 THUMB_CACHE_DIR = settings.BASE_DIR / ".thumb-cache"
 THUMB_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+AUTH_STATE_PATH = settings.OUTPUT_DIR / "auth_state.json"
+STUDIO_PASSWORD = os.getenv("STUDIO_PASSWORD", "ragento.ai")
+ADMIN_PASSWORD = os.getenv("STUDIO_ADMIN_PASSWORD", "AdminKSSLA@ragento.ai")
+AUTH_PROFILES = {
+    "viewer": {
+        "password": STUDIO_PASSWORD,
+        "role": "viewer",
+        "label": "Studio User",
+        "default_limit": 100,
+    },
+    "admin": {
+        "password": ADMIN_PASSWORD,
+        "role": "admin",
+        "label": "Admin",
+        "default_limit": None,
+    },
+}
+SESSION_SERIALIZER = URLSafeTimedSerializer(
+    os.getenv("STUDIO_SESSION_SECRET", f"ragento-studio::{settings.CODE_DIR.resolve()}"),
+    salt="studio-session",
+)
 
 
 def get_pipeline():
@@ -42,6 +66,200 @@ def get_pipeline():
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def _password_hash(value: str) -> str:
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def _default_auth_state() -> dict:
+    return {
+        "profiles": {
+            "viewer": {
+                "label": AUTH_PROFILES["viewer"]["label"],
+                "role": "viewer",
+                "password_hash": _password_hash(AUTH_PROFILES["viewer"]["password"]),
+                "limit": AUTH_PROFILES["viewer"]["default_limit"],
+                "generated_count": 0,
+                "reserved_count": 0,
+            },
+            "admin": {
+                "label": AUTH_PROFILES["admin"]["label"],
+                "role": "admin",
+                "password_hash": _password_hash(AUTH_PROFILES["admin"]["password"]),
+                "limit": AUTH_PROFILES["admin"]["default_limit"],
+                "generated_count": 0,
+                "reserved_count": 0,
+            },
+        }
+    }
+
+
+def _normalize_auth_state(state: dict | None) -> dict:
+    normalized = state if isinstance(state, dict) else {}
+    profiles = normalized.setdefault("profiles", {})
+    defaults = _default_auth_state()["profiles"]
+    for key, default_profile in defaults.items():
+        profile = profiles.setdefault(key, {})
+        for field, default_value in default_profile.items():
+            profile.setdefault(field, default_value)
+    return normalized
+
+
+class LockedJSONState:
+    def __init__(self, path: Path):
+        self.path = path
+        self.handle = None
+        self.state = None
+
+    def __enter__(self):
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.handle = open(self.path, "a+", encoding="utf-8")
+        fcntl.flock(self.handle.fileno(), fcntl.LOCK_EX)
+        self.handle.seek(0)
+        raw = self.handle.read()
+        parsed = {}
+        if raw.strip():
+            try:
+                parsed = json.loads(raw)
+            except Exception:
+                parsed = {}
+        self.state = _normalize_auth_state(parsed)
+        return self.state
+
+    def __exit__(self, exc_type, exc, tb):
+        if self.handle is None:
+            return
+        if exc_type is None:
+            self.handle.seek(0)
+            self.handle.truncate()
+            self.handle.write(json.dumps(self.state, indent=2))
+            self.handle.flush()
+            os.fsync(self.handle.fileno())
+        fcntl.flock(self.handle.fileno(), fcntl.LOCK_UN)
+        self.handle.close()
+        self.handle = None
+
+
+def _get_profile_by_password(password: str):
+    for profile_key, profile in AUTH_PROFILES.items():
+        if password == profile["password"]:
+            return profile_key, profile
+    return None, None
+
+
+def _issue_session_token(profile_key: str, role: str) -> str:
+    return SESSION_SERIALIZER.dumps({"profile_key": profile_key, "role": role})
+
+
+def _read_session():
+    token = request.headers.get("X-Studio-Session", "").strip()
+    if not token:
+        return None
+    try:
+        return SESSION_SERIALIZER.loads(token, max_age=60 * 60 * 12)
+    except (BadSignature, SignatureExpired):
+        return None
+
+
+def _unauthorized(message: str = "Authentication required"):
+    return jsonify({"error": message}), 401
+
+
+def _forbidden(message: str = "Admin access required"):
+    return jsonify({"error": message}), 403
+
+
+def _require_session():
+    session = _read_session()
+    if not session:
+        return None, _unauthorized("Please unlock the studio again.")
+    return session, None
+
+
+def _require_admin_session():
+    session, error = _require_session()
+    if error:
+        return None, error
+    if session.get("role") != "admin":
+        return None, _forbidden("Admin password required.")
+    return session, None
+
+
+def _get_profile_usage(profile_key: str) -> dict:
+    with LockedJSONState(AUTH_STATE_PATH) as state:
+        profile = dict(state["profiles"][profile_key])
+    remaining = None if profile.get("limit") is None else max(
+        0,
+        int(profile.get("limit", 0)) - int(profile.get("generated_count", 0)) - int(profile.get("reserved_count", 0)),
+    )
+    profile["remaining_count"] = remaining
+    return profile
+
+
+def _get_auth_state_snapshot() -> dict:
+    with LockedJSONState(AUTH_STATE_PATH) as state:
+        return json.loads(json.dumps(state))
+
+
+def _reserve_generation_quota(profile_key: str, requested_count: int):
+    if requested_count <= 0:
+        return None
+    with LockedJSONState(AUTH_STATE_PATH) as state:
+        profile = state["profiles"][profile_key]
+        limit = profile.get("limit")
+        generated_count = int(profile.get("generated_count", 0))
+        reserved_count = int(profile.get("reserved_count", 0))
+        if limit is not None and (generated_count + reserved_count + requested_count) > int(limit):
+            remaining = max(0, int(limit) - generated_count - reserved_count)
+            return {
+                "allowed": False,
+                "limit": int(limit),
+                "generated_count": generated_count,
+                "reserved_count": reserved_count,
+                "remaining_count": remaining,
+                "requested_count": requested_count,
+            }
+        profile["reserved_count"] = reserved_count + requested_count
+        return {
+            "allowed": True,
+            "limit": None if limit is None else int(limit),
+            "generated_count": generated_count,
+            "reserved_count": profile["reserved_count"],
+            "remaining_count": None if limit is None else max(0, int(limit) - generated_count - profile["reserved_count"]),
+            "requested_count": requested_count,
+        }
+
+
+def _finalize_generation_quota(profile_key: str, reserved_count: int, actual_count: int):
+    with LockedJSONState(AUTH_STATE_PATH) as state:
+        profile = state["profiles"][profile_key]
+        current_reserved = int(profile.get("reserved_count", 0))
+        profile["reserved_count"] = max(0, current_reserved - max(0, reserved_count))
+        profile["generated_count"] = int(profile.get("generated_count", 0)) + max(0, actual_count)
+
+
+def _release_generation_quota(profile_key: str, reserved_count: int):
+    with LockedJSONState(AUTH_STATE_PATH) as state:
+        profile = state["profiles"][profile_key]
+        current_reserved = int(profile.get("reserved_count", 0))
+        profile["reserved_count"] = max(0, current_reserved - max(0, reserved_count))
+
+
+def _count_requested_outputs(target_sku: str | None, requested_num_shots: int) -> int:
+    if requested_num_shots <= 0 or not settings.INPUT_DIR.exists():
+        return 0
+    total = 0
+    for garment_dir in sorted(settings.INPUT_DIR.iterdir()):
+        if not garment_dir.is_dir():
+            continue
+        sku_id = garment_dir.name.replace(" ", "_")
+        if target_sku and target_sku != sku_id:
+            continue
+        product_images = [p for p in garment_dir.glob("*") if allowed_file(p.name)]
+        if product_images:
+            total += requested_num_shots
+    return total
 
 
 def _normalize_thumb_format(fmt: str | None) -> str:
@@ -287,6 +505,28 @@ def upload_garment():
             
     return jsonify({"status": "SUCCESS", "sku_id": sku_name, "files": saved_files})
 
+@app.route("/api/auth/verify", methods=["POST"])
+def verify_auth():
+    data = request.json or {}
+    password = (data.get("password") or "").strip()
+    profile_key, profile = _get_profile_by_password(password)
+    if not profile:
+        return jsonify({"error": "Incorrect password"}), 401
+    usage = _get_profile_usage(profile_key)
+    return jsonify({
+        "status": "SUCCESS",
+        "session_token": _issue_session_token(profile_key, profile["role"]),
+        "role": profile["role"],
+        "profile_key": profile_key,
+        "quota": {
+            "limit": usage.get("limit"),
+            "generated_count": usage.get("generated_count", 0),
+            "reserved_count": usage.get("reserved_count", 0),
+            "remaining_count": usage.get("remaining_count"),
+        },
+    })
+
+
 @app.route("/api/upload/moodboard", methods=["POST"])
 def upload_moodboard():
     """Upload custom moodboard reference images."""
@@ -340,8 +580,6 @@ def delete_moodboard_photo():
         return jsonify({"status": "SUCCESS"})
     return jsonify({"error": "File not found"}), 404
 
-import datetime
-
 def get_admin_stats():
     """Load or initialize persistent admin statistics."""
     stats_path = settings.OUTPUT_DIR / "admin_stats.json"
@@ -377,7 +615,11 @@ def get_batch_summary():
 @app.route("/api/admin/stats", methods=["GET"])
 def get_admin_analytics():
     """Returns detailed statistics and metrics for the Admin Dashboard."""
+    _, error = _require_admin_session()
+    if error:
+        return error
     admin_stats = get_admin_stats()
+    auth_state = _get_auth_state_snapshot()
     
     # Read summary list for output metrics
     summary_path = settings.OUTPUT_DIR / "batch_execution_summary.json"
@@ -413,25 +655,75 @@ def get_admin_analytics():
         "total_skus": sku_count,
         "total_moodboards": moodboard_count,
         "resolution_counts": res_counts,
-        "activity_log": admin_stats.get("activity_log", [])[:30]
+        "activity_log": admin_stats.get("activity_log", [])[:30],
+        "quota_profiles": auth_state.get("profiles", {}),
     })
 
 @app.route("/api/admin/reset", methods=["POST"])
 def reset_admin_analytics():
     """Resets generation click count and activity logs."""
+    _, error = _require_admin_session()
+    if error:
+        return error
     stats = {"generate_click_count": 0, "activity_log": []}
     save_admin_stats(stats)
     return jsonify({"status": "SUCCESS", "message": "Admin metrics reset successfully"})
 
+
+@app.route("/api/admin/limits", methods=["POST"])
+def update_admin_limits():
+    _, error = _require_admin_session()
+    if error:
+        return error
+
+    data = request.json or {}
+    profile_key = data.get("profile_key", "viewer")
+    limit = data.get("limit")
+    if profile_key not in AUTH_PROFILES:
+        return jsonify({"error": "Unknown profile"}), 400
+    if profile_key == "admin":
+        return jsonify({"error": "Admin limit is fixed and cannot be edited here."}), 400
+    if limit is None:
+        return jsonify({"error": "Limit is required"}), 400
+    try:
+        parsed_limit = int(limit)
+    except (TypeError, ValueError):
+        return jsonify({"error": "Limit must be a whole number"}), 400
+    if parsed_limit < 0:
+        return jsonify({"error": "Limit must be 0 or more"}), 400
+
+    with LockedJSONState(AUTH_STATE_PATH) as state:
+        state["profiles"][profile_key]["limit"] = parsed_limit
+        profile = dict(state["profiles"][profile_key])
+
+    return jsonify({
+        "status": "SUCCESS",
+        "profile_key": profile_key,
+        "quota": {
+            "limit": profile.get("limit"),
+            "generated_count": profile.get("generated_count", 0),
+            "reserved_count": profile.get("reserved_count", 0),
+            "remaining_count": max(
+                0,
+                int(profile.get("limit", 0)) - int(profile.get("generated_count", 0)) - int(profile.get("reserved_count", 0)),
+            ),
+        },
+    })
+
 @app.route("/api/generate", methods=["POST"])
 def trigger_generation():
     """Triggers generation for a specific SKU with optional moodboard selections and transfer controls."""
+    session, error = _require_session()
+    if error:
+        return error
+
     data = request.json or {}
     target_sku = data.get("sku_id")
     requested_num_shots = int(data.get("num_shots", 3))
     selected_moodboard_filenames = data.get("moodboards", [])
     batch_started_at = datetime.datetime.now()
     batch_id = batch_started_at.strftime("BATCH_%Y%m%d_%H%M%S")
+    profile_key = session.get("profile_key", "viewer")
     
     # Track admin generate click count
     admin_stats = get_admin_stats()
@@ -468,6 +760,14 @@ def trigger_generation():
         else (moodboard_images[0].stem if moodboard_images else "Auto Moodboard")
     )
     batch_label = f"{(target_sku or 'ALL_SKUS')} x {moodboard_label}"
+    requested_output_count = _count_requested_outputs(target_sku, requested_num_shots)
+    quota_reservation = _reserve_generation_quota(profile_key, requested_output_count)
+    if quota_reservation and not quota_reservation.get("allowed"):
+        return jsonify({
+            "error": "Generation limit reached. Contact admin to increase your quota.",
+            "code": "GENERATION_LIMIT_REACHED",
+            "quota": quota_reservation,
+        }), 429
     
     garment_dirs = sorted([d for d in input_base_dir.iterdir() if d.is_dir()])
     
@@ -480,62 +780,75 @@ def trigger_generation():
             existing_summary = []
 
     new_results = []
-    for garment_dir in garment_dirs:
-        sku_id = garment_dir.name.replace(" ", "_")
-        if target_sku and target_sku != sku_id:
-            continue
-            
-        product_images = sorted([
-            p for p in garment_dir.glob("*")
-            if allowed_file(p.name)
-        ])
-        
-        if not product_images:
-            continue
-            
-        logger.info(f"UI Triggered Generation for SKU {sku_id} ({requested_num_shots} shots) with controls: {controls.model_dump()}...")
-        results = get_pipeline().process_sku_multi_pose(
-            sku_id=sku_id,
-            product_image_paths=product_images,
-            moodboard_image_paths=moodboard_images,
-            requested_num_shots=requested_num_shots,
-            controls=controls,
-            batch_id=batch_id,
-            batch_label=batch_label,
-        )
-        new_results.extend(results)
+    try:
+        for garment_dir in garment_dirs:
+            sku_id = garment_dir.name.replace(" ", "_")
+            if target_sku and target_sku != sku_id:
+                continue
 
-    final_summary_list = new_results + existing_summary
-    summary_path.write_text(json.dumps(final_summary_list, indent=2), encoding="utf-8")
-    
-    # Log activity entry for admin analytics
-    log_entry = {
-        "timestamp": batch_started_at.strftime("%Y-%m-%d %H:%M:%S"),
-        "batch_id": batch_id,
-        "batch_label": batch_label,
-        "sku_id": target_sku or "ALL_SKUS",
-        "requested_shots": requested_num_shots,
-        "generated_shots": len(new_results),
-        "resolution": controls.resolution,
-        "moodboards": selected_moodboard_filenames,
-        "custom_override": controls.custom_override,
-        "status": "SUCCESS"
-    }
-    if "activity_log" not in admin_stats or not isinstance(admin_stats["activity_log"], list):
-        admin_stats["activity_log"] = []
-    admin_stats["activity_log"].insert(0, log_entry)
-    save_admin_stats(admin_stats)
-    
-    enriched_results = _enrich_summary_items(final_summary_list)
-    enriched_new_results = _enrich_summary_items(new_results)
+            product_images = sorted([
+                p for p in garment_dir.glob("*")
+                if allowed_file(p.name)
+            ])
 
-    return jsonify({
-        "status": "SUCCESS",
-        "batch_id": batch_id,
-        "batch_label": batch_label,
-        "results": enriched_results,
-        "new_results": enriched_new_results,
-    })
+            if not product_images:
+                continue
+
+            logger.info(f"UI Triggered Generation for SKU {sku_id} ({requested_num_shots} shots) with controls: {controls.model_dump()}...")
+            results = get_pipeline().process_sku_multi_pose(
+                sku_id=sku_id,
+                product_image_paths=product_images,
+                moodboard_image_paths=moodboard_images,
+                requested_num_shots=requested_num_shots,
+                controls=controls,
+                batch_id=batch_id,
+                batch_label=batch_label,
+            )
+            new_results.extend(results)
+
+        final_summary_list = new_results + existing_summary
+        summary_path.write_text(json.dumps(final_summary_list, indent=2), encoding="utf-8")
+        _finalize_generation_quota(profile_key, requested_output_count, len(new_results))
+
+        # Log activity entry for admin analytics
+        log_entry = {
+            "timestamp": batch_started_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "batch_id": batch_id,
+            "batch_label": batch_label,
+            "sku_id": target_sku or "ALL_SKUS",
+            "requested_shots": requested_num_shots,
+            "generated_shots": len(new_results),
+            "resolution": controls.resolution,
+            "moodboards": selected_moodboard_filenames,
+            "custom_override": controls.custom_override,
+            "status": "SUCCESS",
+            "profile_key": profile_key,
+        }
+        if "activity_log" not in admin_stats or not isinstance(admin_stats["activity_log"], list):
+            admin_stats["activity_log"] = []
+        admin_stats["activity_log"].insert(0, log_entry)
+        save_admin_stats(admin_stats)
+
+        enriched_results = _enrich_summary_items(final_summary_list)
+        enriched_new_results = _enrich_summary_items(new_results)
+        quota_usage = _get_profile_usage(profile_key)
+
+        return jsonify({
+            "status": "SUCCESS",
+            "batch_id": batch_id,
+            "batch_label": batch_label,
+            "results": enriched_results,
+            "new_results": enriched_new_results,
+            "quota": {
+                "limit": quota_usage.get("limit"),
+                "generated_count": quota_usage.get("generated_count", 0),
+                "reserved_count": quota_usage.get("reserved_count", 0),
+                "remaining_count": quota_usage.get("remaining_count"),
+            },
+        })
+    except Exception:
+        _release_generation_quota(profile_key, requested_output_count)
+        raise
 
 # Image Static Routes
 @app.route("/api/image/input/<garment_dir>/<filename>")
