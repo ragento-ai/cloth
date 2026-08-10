@@ -75,7 +75,62 @@ gcloud compute ssh "$INSTANCE_NAME" \
   --tunnel-through-iap \
   --command="
 set -euo pipefail
+if [ -f '/etc/letsencrypt/live/${DOMAIN}/fullchain.pem' ] && [ -f '/etc/letsencrypt/live/${DOMAIN}/privkey.pem' ]; then
+sudo tee /etc/nginx/sites-available/${DOMAIN} >/dev/null <<EOF
+server {
+    listen 80;
+    server_name ${DOMAIN};
+    return 301 https://\$host\$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name ${DOMAIN};
+
+    ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    client_max_body_size 100M;
+
+    location / {
+        proxy_pass http://127.0.0.1:5001;
+        proxy_http_version 1.1;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
+        proxy_buffering off;
+    }
+}
+
+server {
+    listen 8081 default_server;
+    server_name _;
+
+    client_max_body_size 100M;
+
+    location / {
+        proxy_pass http://127.0.0.1:5001;
+        proxy_http_version 1.1;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
+        proxy_buffering off;
+    }
+}
+EOF
+else
 sudo cp '${REMOTE_DIR}/deployment/studio-vm/nginx-studio.conf' /etc/nginx/sites-available/${DOMAIN}
+fi
 sudo ln -sf /etc/nginx/sites-available/${DOMAIN} /etc/nginx/sites-enabled/${DOMAIN}
 sudo nginx -t
 sudo systemctl reload nginx
