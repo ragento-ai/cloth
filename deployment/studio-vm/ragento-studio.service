@@ -1,0 +1,21 @@
+[Unit]
+Description=Ragento Studio Flask App
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=smarak
+Group=smarak
+WorkingDirectory=/home/smarak/studio-ragento-ai
+Environment="PATH=/home/smarak/studio-ragento-ai/venv/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="PORT=5001"
+Environment="HOST=127.0.0.1"
+ExecStart=/home/smarak/studio-ragento-ai/run-prod.sh
+Restart=always
+RestartSec=5
+StandardOutput=append:/var/log/ragento/studio.log
+StandardError=append:/var/log/ragento/studio-error.log
+
+[Install]
+WantedBy=multi-user.target

@@ -3864,47 +3864,110 @@
             const input = document.getElementById('sku-specific-file-input');
             input.onchange = async () => {
                 if (!input.files || !input.files.length) return;
+                const validationError = validateUploadSelection(input.files);
+                if (validationError) {
+                    alert(validationError);
+                    input.value = '';
+                    return;
+                }
                 const formData = new FormData();
                 formData.append('sku_name', currentTargetSkuUpload);
                 for (const file of input.files) formData.append('files', file);
                 try {
-                    await fetch('/api/upload/garment', { method: 'POST', body: formData });
+                    await uploadFormData('/api/upload/garment', formData);
                     await loadInitialData();
                 } catch (err) {
                     alert(`Upload error: ${err}`);
+                } finally {
+                    input.value = '';
                 }
             };
             input.click();
         }
 
+        const MAX_VERCEL_UPLOAD_BYTES = 4.5 * 1024 * 1024;
+
+        function isVercelHost() {
+            return window.location.hostname.includes('vercel.app');
+        }
+
+        function validateUploadSelection(fileList) {
+            const files = Array.from(fileList || []);
+            if (!files.length) return null;
+
+            const totalBytes = files.reduce((sum, file) => sum + (file.size || 0), 0);
+            if (isVercelHost() && totalBytes > MAX_VERCEL_UPLOAD_BYTES) {
+                const totalMb = (totalBytes / (1024 * 1024)).toFixed(2);
+                return `Upload too large for Vercel function upload (${totalMb} MB selected). Keep the total under 4.5 MB, or use durable blob storage for larger uploads.`;
+            }
+            return null;
+        }
+
+        async function uploadFormData(url, formData) {
+            const res = await fetch(url, { method: 'POST', body: formData });
+            const contentType = res.headers.get('content-type') || '';
+            const rawText = await res.text();
+            let data = null;
+
+            if (contentType.includes('application/json') && rawText) {
+                try {
+                    data = JSON.parse(rawText);
+                } catch (err) {
+                    throw new Error(`Server returned invalid JSON: ${rawText.slice(0, 180)}`);
+                }
+            }
+
+            if (!res.ok) {
+                const message = data?.error || rawText || `HTTP ${res.status}`;
+                throw new Error(message);
+            }
+
+            return data || {};
+        }
+
         async function handleNewGarmentUpload(input) {
             if (!input.files || !input.files.length) return;
+            const validationError = validateUploadSelection(input.files);
+            if (validationError) {
+                alert(validationError);
+                input.value = '';
+                return;
+            }
             const skuName = prompt('SKU name', 'GARMENT_NEW') || 'GARMENT_NEW';
             const formData = new FormData();
             formData.append('sku_name', skuName);
             for (const file of input.files) formData.append('files', file);
             try {
-                const res = await fetch('/api/upload/garment', { method: 'POST', body: formData });
-                const data = await res.json();
+                const data = await uploadFormData('/api/upload/garment', formData);
                 await loadInitialData();
                 selectedGarmentSku = data.sku_id;
                 renderGarmentPickerCarousel();
                 switchTab('garments-view');
             } catch (err) {
                 alert(`Upload error: ${err}`);
+            } finally {
+                input.value = '';
             }
         }
 
         async function handleMoodboardUpload(input) {
             if (!input.files || !input.files.length) return;
+            const validationError = validateUploadSelection(input.files);
+            if (validationError) {
+                alert(validationError);
+                input.value = '';
+                return;
+            }
             const formData = new FormData();
             for (const file of input.files) formData.append('files', file);
             try {
-                await fetch('/api/upload/moodboard', { method: 'POST', body: formData });
+                await uploadFormData('/api/upload/moodboard', formData);
                 await loadInitialData();
                 switchTab('moodboards-view');
             } catch (err) {
                 alert(`Upload error: ${err}`);
+            } finally {
+                input.value = '';
             }
         }
 

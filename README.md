@@ -73,6 +73,12 @@ This starts the app on **`http://localhost:5000`** with Flask auto-reload enable
 python main.py --num-shots 3
 ```
 
+### 4. Deploy to Vercel
+```bash
+./deploy-vercel.sh
+```
+Deployment details, required environment variables, and the `studio` project flow are documented in `DEPLOY_VERCEL.md`.
+
 ---
 
 ## 🛡️ Identity & Quality Control Guardrails
