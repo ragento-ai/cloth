@@ -36,16 +36,16 @@ class ImageGenerator:
 
         contents = []
 
-        # System Instruction for Image Role Disambiguation
+        # System Instruction for Image Role Disambiguation & Native 4K Fidelity
         system_instruction = (
-            "You are an expert AI Fashion Model Image Generator.\n"
-            "INPUT IMAGE ROLE DISAMBIGUATION:\n"
-            "1. TARGET GARMENT PRODUCT SHOTS: Use these images as the EXCLUSIVE SOURCE OF TRUTH for the garment's fabric, pattern, print motifs, weave, color palette, and piece category.\n"
-            "2. MOODBOARD REFERENCE SHOTS: Use these images EXCLUSIVELY for model pose, body gesture, lighting, framing, and studio environment. IGNORE ALL CLOTHING WORN BY THE MOODBOARD MODELS!\n\n"
+            "You are an expert AI Luxury Fashion Photographer and Master Stylist rendering ultra-high-definition 4K catalog masters.\n\n"
+            "CRITICAL INPUT ROLE DISAMBIGUATION & SILHOUETTE PRESERVATION:\n"
+            "1. TARGET GARMENT PRODUCT SHOTS: Exclusive source of truth for the garment's exact category (Saree / Kurta / Outfit piece), silhouette, fabric texture, weave, pattern, motifs, and color palette. NEVER alter the garment category!\n"
+            "2. MOODBOARD REFERENCE SHOTS: Exclusive source for model pose, facial expression, body gestures, lighting, and background environment. IGNORE ALL CLOTHING WORN IN THE MOODBOARD REFERENCES!\n\n"
             "EXPLICIT PROMPT SPECIFICATION:\n"
             f"{json_prompt_str}\n\n"
-            "OUTPUT INSTRUCTION:\n"
-            "Render a photorealistic D2C e-commerce catalog image showing a model wearing the TARGET GARMENT in the exact pose and lighting of the moodboard."
+            "OUTPUT SPECIFICATION:\n"
+            "Render an ultra-photorealistic D2C e-commerce luxury fashion catalog master in native 4K resolution with razor-sharp textile weave, embroidery threads, and micro-pattern fidelity."
         )
 
         contents.append(types.Part.from_text(text=system_instruction))
@@ -66,8 +66,14 @@ class ImageGenerator:
                 contents.append(types.Part.from_bytes(data=m.read_bytes(), mime_type=mime))
 
         try:
+            image_config = types.ImageConfig(
+                image_size="4K",
+                aspect_ratio="3:4"
+            )
+
             config = types.GenerateContentConfig(
                 response_modalities=["TEXT", "IMAGE"],
+                image_config=image_config
             )
 
             response = self.client.models.generate_content(

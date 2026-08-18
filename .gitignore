@@ -13,8 +13,24 @@ vertex-cred.json
 # User Uploads & Raw Inputs (Do not push raw input or moodboard references)
 1  INPUT/
 3  MOODBOARD REFERENCE/
+saree/
+saree_unfolded/
+moodboard_2/
+
+# Generated Outputs & Assets
+output/
+output_sari/
+example_generations/
+example_generations_extended_moodboard/
+*.zip
+*.tar.gz
+*.png
+*.jpg
+*.jpeg
+*.webp
 
 # OS / IDE
 .DS_Store
 .vscode/
 .idea/
+.tempmediaStorage/
