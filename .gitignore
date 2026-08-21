@@ -22,6 +22,10 @@ output/
 output_sari/
 example_generations/
 example_generations_extended_moodboard/
+batch_vtransfer_output/
+outputs_vtransfer_4K/
+inputs_vtransfer/
+scratch/
 *.zip
 *.tar.gz
 *.png

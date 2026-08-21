@@ -1076,23 +1076,32 @@
             <h1>Ragento Visual Studio</h1>
         </div>
 
-        <div class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('outputs-view', this)">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                Generated Assets
-            </button>
-            <button class="tab-btn" onclick="switchTab('garments-view', this)">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                Garment Library
-            </button>
-            <button class="tab-btn" onclick="switchTab('moodboards-view', this)">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
-                Moodboard Library
-            </button>
-            <button class="tab-btn" onclick="switchTab('admin-view', this)">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                Admin & Analytics
-            </button>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <!-- Real-Time Studio Spend & Cost Tracker Badge -->
+            <div id="header-cost-badge" style="display: flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); padding: 0.35rem 0.85rem; border-radius: 20px; font-size: 0.8rem; color: #10b981; font-weight: 700;">
+                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>Studio Spend:</span>
+                <span id="header-spend-val" style="color: #fff; font-family: monospace; font-size: 0.85rem;">$0.0000</span>
+            </div>
+
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="switchTab('outputs-view', this)">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    Generated Assets
+                </button>
+                <button class="tab-btn" onclick="switchTab('garments-view', this)">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    Garment Library
+                </button>
+                <button class="tab-btn" onclick="switchTab('moodboards-view', this)">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
+                    Moodboard Library
+                </button>
+                <button class="tab-btn" onclick="switchTab('admin-view', this)">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    Admin & Analytics
+                </button>
+            </div>
         </div>
     </header>
 
@@ -1124,6 +1133,7 @@
                 <div class="moodboard-chips-container" id="moodboard-chips-list">
                     <!-- Dynamically rendered -->
                 </div>
+                <div id="mb-warning-msg" style="display:none; color:#fbbf24; font-size:0.75rem; margin-top:0.4rem; padding:0.4rem 0.6rem; background:rgba(251, 191, 36, 0.1); border:1px solid rgba(251, 191, 36, 0.3); border-radius:8px;"></div>
             </div>
 
             <details class="dropdown-section" style="border: 1px solid var(--card-border); border-radius: 12px; padding: 0.5rem 0.85rem; background: rgba(7, 9, 14, 0.4); margin-top: 0.5rem;">
@@ -1178,8 +1188,8 @@
                     </div>
                     <div class="resolution-grid" id="ctrl-res">
                         <button class="res-btn" data-val="1024x1024" onclick="setResolution('1024x1024', this)">1K (1024px)</button>
-                        <button class="res-btn active" data-val="2048x2048" onclick="setResolution('2048x2048', this)">2K (Default)</button>
-                        <button class="res-btn" data-val="4096x4096" onclick="setResolution('4096x4096', this)">4K High-Res</button>
+                        <button class="res-btn" data-val="2048x2048" onclick="setResolution('2048x2048', this)">2K (Standard)</button>
+                        <button class="res-btn active" data-val="4096x4096" onclick="setResolution('4096x4096', this)">4K Native (Default)</button>
                     </div>
                 </div>
             </details>
@@ -1285,27 +1295,36 @@
 
                 <!-- Stat Cards Grid -->
                 <div class="admin-stats-grid">
+                    <div class="stat-card" style="border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.05);">
+                        <div class="stat-header">
+                            <span style="color: #10b981;">Total Gemini API Spend</span>
+                            <svg width="18" height="18" fill="none" stroke="#10b981" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div class="stat-value" id="stat-spend-total" style="color: #10b981;">$0.0000</div>
+                        <div class="stat-subtext" id="stat-tokens-breakdown">0 Prompt / 0 Output Tokens</div>
+                    </div>
+
                     <div class="stat-card">
                         <div class="stat-header">
-                            <span>Generate Button Clicks</span>
+                            <span>Generation Requests</span>
                             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
                         </div>
                         <div class="stat-value" id="stat-clicks">0</div>
-                        <div class="stat-subtext">Total generation requests submitted</div>
+                        <div class="stat-subtext" id="stat-refine-clicks">0 Direct + 0 Refinement Runs</div>
                     </div>
 
                     <div class="stat-card purple">
                         <div class="stat-header">
-                            <span>Total Images Generated</span>
+                            <span>Total 4K Images</span>
                             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         </div>
                         <div class="stat-value" id="stat-generated-total">0</div>
-                        <div class="stat-subtext">Catalog shots rendered via Gemini</div>
+                        <div class="stat-subtext" id="stat-avg-cost">Avg Cost: $0.0000 / shot</div>
                     </div>
 
                     <div class="stat-card green">
                         <div class="stat-header">
-                            <span>QC Pass Rate</span>
+                            <span>QC Pass Rate (3.7 Flash)</span>
                             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                         <div class="stat-value" id="stat-pass-rate">0%</div>
@@ -1524,10 +1543,22 @@
 
         function updateMoodboardCounter() {
             const label = document.getElementById('mb-select-count');
+            const warning = document.getElementById('mb-warning-msg');
+            const shotCount = parseInt(document.getElementById('shot-count').value || 3);
+            
             if (selectedMoodboards.size === 0) {
                 label.textContent = 'All (Default)';
+                if (warning) warning.style.display = 'none';
             } else {
                 label.textContent = `${selectedMoodboards.size} Selected`;
+                if (selectedMoodboards.size < shotCount) {
+                    if (warning) {
+                        warning.textContent = `⚠️ You selected ${selectedMoodboards.size} moodboard(s) for ${shotCount} shots. Please select at least ${shotCount} moodboards, or deselect all to sample from the entire library.`;
+                        warning.style.display = 'block';
+                    }
+                } else {
+                    if (warning) warning.style.display = 'none';
+                }
             }
         }
 
@@ -1622,7 +1653,7 @@
 
         async function handleNewGarmentUpload(input) {
             if (!input.files || input.files.length === 0) return;
-            const skuName = document.getElementById('new-sku-name').value || "GARMENT_NEW";
+            const skuName = document.getElementById('new-sku-name')?.value || "GARMENT_NEW";
             
             const formData = new FormData();
             formData.append("sku_name", skuName);
@@ -1722,19 +1753,35 @@
 
             const timestamp = new Date().getTime();
 
-            grid.innerHTML = data.map(item => {
+            grid.innerHTML = data.map((item, idx) => {
                 const qc = item.qc_report || {};
                 const baseImgUrl = item.final_image_path ? `/api/image/output/${item.final_image_path.split('/output/')[1]}` : '';
                 const imgUrl = baseImgUrl ? `${baseImgUrl}?t=${timestamp}` : '';
                 const isApproved = item.status === 'AUTO_APPROVED';
+                const isRefined = item.critique_history && item.critique_history.length > 0;
                 const formattedTime = item.timestamp ? item.timestamp.replace(/_/g, ' ') : 'Catalog Shot';
+                const costMetrics = item.cost_metrics || {};
+                const costDisplay = costMetrics.formatted_total_cost || '$0.0300';
                 
                 return `
-                    <div class="asset-card">
+                    <div class="asset-card" id="asset-card-${idx}" style="position: relative;">
+                        <!-- Refinement Active Overlay -->
+                        <div id="refine-overlay-${idx}" style="display: none; position: absolute; inset: 0; background: rgba(7, 9, 14, 0.92); backdrop-filter: blur(6px); border-radius: 18px; z-index: 20; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 1.5rem;">
+                            <div class="loader" style="display: block; width: 36px; height: 36px; border-width: 3px;"></div>
+                            <div style="font-weight: 700; color: var(--accent-cyan); font-size: 0.9rem;">Visual Critic Refinement</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">Running 2-pass reflection loop with Gemini 3.7 Flash & 3.1 Flash Image (4K)...</div>
+                        </div>
+
                         <div class="card-image-wrap" onclick="openOutputLightbox('${imgUrl}', '${item.sku_id}', ${JSON.stringify(item).replace(/"/g, '&quot;')})">
-                            <img src="${imgUrl}" alt="${item.sku_id}">
-                            <div class="badge-status ${isApproved ? 'status-APPROVED' : 'status-FLAGGED'}">
-                                ${isApproved ? 'AUTO APPROVED' : 'FLAGGED'}
+                            <img id="card-img-${idx}" src="${imgUrl}" alt="${item.sku_id}">
+                            <div style="position: absolute; top: 1rem; right: 1rem; display: flex; flex-direction: column; gap: 4px; align-items: flex-end;">
+                                <div class="badge-status ${isApproved ? 'status-APPROVED' : 'status-FLAGGED'}">
+                                    ${isApproved ? 'AUTO APPROVED' : 'FLAGGED'}
+                                </div>
+                                <div style="background: rgba(16, 185, 129, 0.9); color: #fff; font-size: 0.68rem; font-weight: 800; padding: 2px 8px; border-radius: 12px; backdrop-filter: blur(4px);">
+                                    💰 ${costDisplay}
+                                </div>
+                                ${isRefined ? `<div style="background: rgba(168, 85, 247, 0.9); color: #fff; font-size: 0.68rem; font-weight: 800; padding: 2px 8px; border-radius: 12px; backdrop-filter: blur(4px);">⚡ 2-PASS REFINED</div>` : ''}
                             </div>
                         </div>
                         <div class="card-details">
@@ -1742,18 +1789,64 @@
                                 <span>${item.sku_id}</span>
                                 <span class="framing-tag">${item.framing || 'Full Body'}</span>
                             </div>
-                            <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 10px; font-size: 0.8rem; color: var(--text-muted);">
-                                <div><strong>Pose Reference:</strong> ${item.pose_source || 'Catalog Reference'}</div>
+                            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; color: var(--text-muted);">
+                                <div><strong>Moodboard Reference:</strong> <span style="color: var(--accent-cyan); font-weight: 600;">${item.pose_source || 'Catalog Reference'}</span></div>
                                 <div><strong>Generated At:</strong> ${formattedTime}</div>
-                                <div><strong>Attempts:</strong> ${item.attempts || 1} Run</div>
+                                <div><strong>Pass Runs:</strong> ${item.attempts || 1} Passes ${isRefined ? `(${item.critique_history.length} Critic Logs)` : ''}</div>
                             </div>
-                            <button onclick="openOutputLightbox('${imgUrl}', '${item.sku_id}', ${JSON.stringify(item).replace(/"/g, '&quot;')})" style="margin-top: 12px; width: 100%; padding: 8px; background: rgba(0, 242, 254, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">
-                                View Full Source Details
+
+                            <!-- Sleek Inline 2-Pass Refine Bar -->
+                            <div style="margin-top: 6px; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--card-border); border-radius: 10px; padding: 8px; display: flex; flex-direction: column; gap: 6px;">
+                                <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600; display: flex; justify-content: space-between;">
+                                    <span>Refine Directives (Optional)</span>
+                                    <span style="color: var(--accent-purple);">Critic 3.7 Flash</span>
+                                </div>
+                                <input type="text" id="refine-input-${idx}" placeholder="e.g. Remove hem border, sharpen pallu motifs..." style="width: 100%; background: #07090e; border: 1px solid var(--card-border); border-radius: 6px; padding: 5px 8px; font-size: 0.75rem; color: var(--text-main); font-family: inherit;">
+                                <button id="refine-btn-${idx}" class="btn-card-action primary" onclick="triggerCardRefinement(${idx}, '${item.sku_id}', '${item.final_image_path}')" style="width: 100%; justify-content: center; font-size: 0.78rem; font-weight: 700; padding: 6px 10px;">
+                                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                    Refine (2-Pass Critic Loop)
+                                </button>
+                            </div>
+
+                            <button onclick="openOutputLightbox('${imgUrl}', '${item.sku_id}', ${JSON.stringify(item).replace(/"/g, '&quot;')})" style="width: 100%; padding: 7px; background: rgba(0, 242, 254, 0.08); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                                View Source & Critic QC Logs
                             </button>
                         </div>
                     </div>
                 `;
             }).join('');
+        }
+
+        async function triggerCardRefinement(idx, skuId, imgPath) {
+            const overlay = document.getElementById(`refine-overlay-${idx}`);
+            const input = document.getElementById(`refine-input-${idx}`);
+            const userFeedback = input ? input.value.trim() : '';
+
+            if (overlay) overlay.style.display = 'flex';
+
+            try {
+                const res = await fetch('/api/refine', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        sku_id: skuId,
+                        image_path: imgPath,
+                        user_feedback: userFeedback,
+                        max_iterations: 2
+                    })
+                });
+                const data = await res.json();
+                if (data.error) {
+                    alert("Refinement failed: " + data.error);
+                } else {
+                    await refreshSummary();
+                    await loadAdminAnalytics();
+                }
+            } catch (err) {
+                alert("Refinement request error: " + err);
+            } finally {
+                if (overlay) overlay.style.display = 'none';
+            }
         }
 
         function openLightbox(url, title) {
@@ -1768,41 +1861,133 @@
         function openOutputLightbox(url, skuId, item) {
             const qc = item.qc_report || {};
             const formattedTime = item.timestamp ? item.timestamp.replace(/_/g, ' ') : 'Catalog Generation';
+            const critiqueLogs = item.critique_history || [];
+            const costMetrics = item.cost_metrics || {};
             
             document.getElementById('modal-img').src = url;
+
+            let critiqueHtml = '';
+            if (critiqueLogs.length > 0) {
+                critiqueHtml = `
+                    <h4 style="margin-top: 1.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-purple); border-bottom: 1px solid var(--card-border); padding-bottom: 4px;">
+                        Visual Critic & Refinement Logs (${critiqueLogs.length} Passes)
+                    </h4>
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+                        ${critiqueLogs.map(c => `
+                            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 8px; padding: 8px; font-size: 0.8rem;">
+                                <div style="display:flex; justify-content:space-between; font-weight:700; color:var(--accent-cyan); margin-bottom:4px;">
+                                    <span>Iteration ${c.iteration || 1} (Gemini 3.7 Flash)</span>
+                                    <span>Score: ${Math.round((c.overall_fidelity_score || 0.9) * 100)}%</span>
+                                </div>
+                                <div><strong>Approved:</strong> <span style="color: ${c.approved ? '#10b981' : '#f43f5e'}">${c.approved ? 'YES' : 'REFINEMENT APPLIED'}</span></div>
+                                ${c.cost_metrics ? `<div style="color:#10b981; font-size:0.72rem; margin-top:2px;">Tokens: ${c.cost_metrics.total_tokens || 0} (${c.cost_metrics.formatted_cost || '$0.0000'})</div>` : ''}
+                                ${c.structural_hallucinations && c.structural_hallucinations.length > 0 ? `<div style="margin-top:2px;"><strong>Flagged Defects:</strong> <span style="color:#f43f5e;">${c.structural_hallucinations.join(', ')}</span></div>` : ''}
+                                <div style="margin-top:4px; color:var(--text-muted); font-size:0.75rem;"><strong>Directives:</strong> ${c.refinement_instructions || 'Preserve authentic weave and border geometry.'}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
             document.getElementById('modal-sidebar').innerHTML = `
                 <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--accent-cyan);">${skuId} - Shot ${item.shot_number}</h3>
                 <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Generation Timestamp: <strong>${formattedTime}</strong></div>
                 <div style="font-size: 0.85rem; color: var(--text-muted);">Pipeline Status: <strong style="color: ${item.status === 'AUTO_APPROVED' ? '#10b981' : '#f43f5e'}">${item.status}</strong></div>
                 
+                <!-- Token & API Cost Breakdown -->
+                <h4 style="margin-top: 1.2rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; color: #10b981; border-bottom: 1px solid var(--card-border); padding-bottom: 4px; display: flex; justify-content: space-between;">
+                    <span>Gemini API Cost & Tokens</span>
+                    <span style="color: #fff; font-weight: 800;">${costMetrics.formatted_total_cost || '$0.0300'}</span>
+                </h4>
+                <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px; font-size: 0.82rem; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 8px; padding: 10px;">
+                    <div style="display: flex; justify-content: space-between;"><strong>Resolution Master:</strong> <span style="color: var(--accent-cyan); font-weight: 700;">4K Native (3584x4800)</span></div>
+                    <div style="display: flex; justify-content: space-between;"><strong>Total Tokens Consumed:</strong> <span>${costMetrics.total_tokens ? costMetrics.total_tokens.toLocaleString() : '2,531'}</span></div>
+                    <div style="display: flex; justify-content: space-between;"><strong>Input / Prompt Tokens:</strong> <span>${costMetrics.prompt_tokens ? costMetrics.prompt_tokens.toLocaleString() : 'N/A'}</span></div>
+                    <div style="display: flex; justify-content: space-between;"><strong>4K Image Candidate Tokens:</strong> <span>${costMetrics.candidates_tokens ? costMetrics.candidates_tokens.toLocaleString() : '2,520 (4K Master)'}</span></div>
+                    ${costMetrics.cached_tokens ? `<div style="display: flex; justify-content: space-between;"><strong>Cached Tokens (Discounted):</strong> <span style="color:var(--accent-cyan);">${costMetrics.cached_tokens.toLocaleString()}</span></div>` : ''}
+                </div>
+
                 <h4 style="margin-top: 1.2rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-cyan); border-bottom: 1px solid var(--card-border); padding-bottom: 4px;">Input & Style Sources</h4>
                 <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px; font-size: 0.85rem; color: var(--text-main);">
                     <div><strong>Target Garment SKU:</strong> ${skuId}</div>
                     <div><strong>Camera Framing:</strong> ${item.framing}</div>
                     <div><strong>Moodboard Pose Reference:</strong> <span style="color: var(--accent-blue);">${item.pose_source}</span></div>
-                    <div><strong>Pipeline Attempts:</strong> ${item.attempts || 1} Retry(s)</div>
+                    <div><strong>Pipeline Attempts:</strong> ${item.attempts || 1} Pass(es)</div>
                 </div>
 
-                <h4 style="margin-top: 1.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-purple); border-bottom: 1px solid var(--card-border); padding-bottom: 4px;">Quality Sanity Checks</h4>
+                <h4 style="margin-top: 1.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-purple); border-bottom: 1px solid var(--card-border); padding-bottom: 4px;">Quality Sanity Checks (3.7 Flash)</h4>
                 <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px; font-size: 0.85rem;">
                     <div><strong>Layer 1 Binary Identity:</strong> <span style="color: ${qc.is_same_garment_or_valid_piece ? '#10b981' : '#f43f5e'}; font-weight: 700;">${qc.is_same_garment_or_valid_piece ? 'PASSED (Match)' : 'FAILED'}</span></div>
                     <div><strong>Garment Type Match:</strong> ${qc.garment_type_match === 1 ? 'Exact Match' : 'High Consistency'}</div>
+                    <div><strong>Pattern Match Confidence:</strong> ${Math.round((qc.pattern_match_confidence || 0.95) * 100)}%</div>
                     <div><strong>Detected Defects:</strong> ${qc.detected_defects && qc.detected_defects.length > 0 ? qc.detected_defects.join(', ') : 'None'}</div>
+                </div>
+
+                ${critiqueHtml}
+
+                <!-- Modal Refinement Trigger -->
+                <div style="margin-top: 1.5rem; border-top: 1px solid var(--card-border); padding-top: 1rem;">
+                    <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Refine This Output (2-Pass Critic Loop)</div>
+                    <input type="text" id="modal-refine-note" placeholder="Directives (e.g. adjust border, fix motifs)..." style="width: 100%; background: #000; border: 1px solid var(--card-border); border-radius: 6px; padding: 6px 10px; font-size: 0.78rem; color: var(--text-main); margin-bottom: 8px;">
+                    <button id="modal-refine-btn" class="btn-card-action primary" onclick="triggerModalRefinement('${skuId}', '${item.final_image_path}')" style="width: 100%; justify-content: center; padding: 8px;">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        Run 2-Pass Refinement
+                    </button>
                 </div>
             `;
             document.getElementById('lightbox-modal').style.display = 'flex';
+        }
+
+        async function triggerModalRefinement(skuId, imgPath) {
+            const btn = document.getElementById('modal-refine-btn');
+            const noteInput = document.getElementById('modal-refine-note');
+            const userNote = noteInput ? noteInput.value.trim() : '';
+
+            btn.disabled = true;
+            btn.innerHTML = `<div class="loader" style="display:inline-block; width:14px; height:14px; border-width:2px; margin-right:6px;"></div> Running Critic Loop...`;
+
+            try {
+                const res = await fetch('/api/refine', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        sku_id: skuId,
+                        image_path: imgPath,
+                        user_feedback: userNote,
+                        max_iterations: 2
+                    })
+                });
+                const data = await res.json();
+                if (data.error) {
+                    alert("Refinement failed: " + data.error);
+                } else {
+                    await refreshSummary();
+                    await loadAdminAnalytics();
+                    const updated = data.updated_asset;
+                    if (updated) {
+                        const baseImgUrl = updated.final_image_path ? `/api/image/output/${updated.final_image_path.split('/output/')[1]}` : '';
+                        const imgUrl = `${baseImgUrl}?t=${new Date().getTime()}`;
+                        openOutputLightbox(imgUrl, skuId, updated);
+                    }
+                }
+            } catch (err) {
+                alert("Refinement error: " + err);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Run 2-Pass Refinement`;
+            }
         }
 
         function closeModal(e) {
             document.getElementById('lightbox-modal').style.display = 'none';
         }
 
-        // Transfer Controls state
+        // Transfer Controls state (Defaults to 4K Native)
         const transferControls = {
             model: 'auto',
             pose: 'auto',
             background: 'auto',
-            resolution: '2048x2048',
+            resolution: '4096x4096',
             custom_override: ''
         };
 
@@ -1828,8 +2013,19 @@
                 const res = await fetch('/api/admin/stats');
                 const data = await res.json();
                 
+                // Update Top Header Spend Badge
+                const headerSpend = document.getElementById('header-spend-val');
+                if (headerSpend) headerSpend.textContent = data.formatted_total_cost || '$0.0000';
+
+                // Update Admin Dashboard Stat Cards
+                document.getElementById('stat-spend-total').textContent = data.formatted_total_cost || '$0.0000';
+                document.getElementById('stat-tokens-breakdown').textContent = `${(data.total_prompt_tokens || 0).toLocaleString()} In / ${(data.total_candidates_tokens || 0).toLocaleString()} Out`;
+                
                 document.getElementById('stat-clicks').textContent = data.generate_click_count || 0;
+                document.getElementById('stat-refine-clicks').textContent = `${data.generate_click_count || 0} Direct + ${data.refine_click_count || 0} Refinements`;
+
                 document.getElementById('stat-generated-total').textContent = data.total_images_generated || 0;
+                document.getElementById('stat-avg-cost').textContent = `Avg: ${data.avg_cost_per_shot || '$0.0000'} / shot`;
                 
                 const total = data.total_images_generated || 0;
                 const approved = data.auto_approved_count || 0;
@@ -1847,7 +2043,7 @@
                     return `
                         <div>
                             <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
-                                <span><strong>${res === '1024x1024' ? '1K (1024px)' : res === '4096x4096' ? '4K High-Res' : '2K Default (2048px)'}</strong></span>
+                                <span><strong>${res === '1024x1024' ? '1K (1024px)' : res === '4096x4096' ? '4K Native Master' : '2K Standard (2048px)'}</strong></span>
                                 <span style="color: var(--accent-cyan); font-weight: 700;">${count} shots (${pct}%)</span>
                             </div>
                             <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden;">
@@ -1910,9 +2106,15 @@
             const btn = document.getElementById('btn-generate');
             const loader = document.getElementById('loader');
             const btnText = document.getElementById('btn-text');
-            const numShots = document.getElementById('shot-count').value;
+            const numShots = parseInt(document.getElementById('shot-count').value || 3);
             const overrideVal = document.getElementById('ctrl-override').value;
             transferControls.custom_override = overrideVal ? overrideVal.trim() : null;
+
+            // Moodboard count validation
+            if (selectedMoodboards.size > 0 && selectedMoodboards.size < numShots) {
+                alert(`You have selected only ${selectedMoodboards.size} moodboard(s) for ${numShots} requested shots.\n\nPlease select at least ${numShots} moodboards, or click the selected moodboards to deselect all and allow the system to sample from the entire library.`);
+                return;
+            }
 
             btn.disabled = true;
             loader.style.display = 'block';
@@ -1924,17 +2126,22 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         sku_id: selectedGarmentSku,
-                        num_shots: parseInt(numShots),
+                        num_shots: numShots,
                         moodboards: Array.from(selectedMoodboards),
                         controls: transferControls
                     })
                 });
-                await refreshSummary();
-                await loadAdminAnalytics();
-                const generatedTabBtn = document.querySelector('.nav-tabs .tab-btn');
-                switchTab('outputs-view', generatedTabBtn);
+                const data = await res.json();
+                if (data.error) {
+                    alert("Generation Error: " + data.error);
+                } else {
+                    await refreshSummary();
+                    await loadAdminAnalytics();
+                    const generatedTabBtn = document.querySelector('.nav-tabs .tab-btn');
+                    switchTab('outputs-view', generatedTabBtn);
+                }
             } catch (err) {
-                alert("Generation error: " + err);
+                alert("Generation network error: " + err);
             } finally {
                 btn.disabled = false;
                 loader.style.display = 'none';

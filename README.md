@@ -68,15 +68,23 @@ python server.py
 ```
 Open **`http://localhost:5000`** in your web browser to manage garment SKUs, select moodboards, and trigger catalog generation runs.
 
-### 3. Run via CLI (Optional)
+### 3. Run Production 4K Batch (Gemini 3.0 Pro Image)
 ```bash
-python main.py --num-shots 3
+python run_pro_batch_production.py
+```
+
+### 4. Run Fast 4K Batch (Gemini 3.1 Flash Image)
+```bash
+python run_vtransfer_batch.py
 ```
 
 ---
 
 ## 🛡️ Identity & Quality Control Guardrails
 
-Ragento Visual Studio implements a 2-Layer Quality Control System:
-- **Layer 1 (Binary Sanity Gate)**: Checks whether the generated output represents the same garment SKU or a valid piece of the ensemble (e.g., kurta/dupatta/blouse piece).
-- **Layer 2 (Multi-Metric Quality Inspection)**: Verifies anatomical correctness, base color fidelity, drape realism, and pattern match confidence before auto-approving assets.
+Ragento Visual Studio implements an automated Quality Control & Patch Inspection System:
+- **Autonomous Micro-Patch Extraction (`SemanticPatchExtractor`)**: Dynamically extracts high-zoom regions (trouser cutwork lace, embroidered bibs, tassels) with uncompressed `MEDIA_RESOLUTION_ULTRA_HIGH`.
+- **Master Canvas Template Sequencing**: Uses the assigned Moodboard Reference as Image Part 1 to anchor camera depth, natural scene scale, and lighting while treating 2–4 product shots strictly as invariant apparel swatches.
+- **Visual Critic Reflection Loop (`VisualCritic`)**: Audits generated 4K masters against ground-truth patches and triggers targeted single-pass refinement if pattern deviations occur.
+
+For in-depth architectural details and production batch results across 56 Native 4K masters, see **[docs/10_production_vtransfer_pipeline_4k.md](docs/10_production_vtransfer_pipeline_4k.md)**.

@@ -18,6 +18,8 @@ Ragento Visual Studio leverages a dual-engine architecture combining **Gemini 3.
 | **[06_installation_and_deployment.md](file:///home/amrit-lal-singh/Experimentation/cloth/docs/06_installation_and_deployment.md)** | **Setup, Authentication & Operations** | One-command setup (`setup.sh`), Vertex AI service account / Base64 auth, CLI & Web execution modes. |
 | **[07_saree_pipelines_and_unfolded_generation.md](file:///home/amrit-lal-singh/Experimentation/cloth/docs/07_saree_pipelines_and_unfolded_generation.md)** | **Saree Pipelines & Cumulative Multi-Reference Architecture** | 6-meter continuous textile problem space, v1/v2 swatch breakdown failure analysis, and v3 cumulative flat-lay & drape pipelines. |
 | **[08_critique_mode_and_pipeline_evolution.md](file:///home/amrit-lal-singh/Experimentation/cloth/docs/08_critique_mode_and_pipeline_evolution.md)** | **Critique Mode & Saree Pipeline Evolution (Best Method)** | Complete evolution from v1 to v5, autonomous reflection loop (Gemini 3.1 Flash Generator + Gemini 3.6 Flash Critic), and AI agent execution guide. |
+| **[09_failed_experiments_and_learnings.md](file:///home/amrit-lal-singh/Experimentation/cloth/docs/09_failed_experiments_and_learnings.md)** | **Failed Experiments & Architectural Lessons** | Analysis of failed multi-pass refinement, isolated swatch failures, and over-constraining prompt pitfalls. |
+| **[10_production_vtransfer_pipeline_4k.md](file:///home/amrit-lal-singh/Experimentation/cloth/docs/10_production_vtransfer_pipeline_4k.md)** | **Production 4K V-Transfer Pipeline (Latest Architecture)** | Master Canvas Template sequencing, multi-input disentanglement, uncompressed micro-patches, and 56-asset 4K batch execution. |
 
 ---
 

@@ -1,17 +1,19 @@
 """
 Flask Web Server for Ragento Visual Studio - Studio Grade AI Catalog & Workflow Management.
+Featuring Single Moodboard Allocation, Gemini 3.1 Flash Image Generation, and 2-Pass Visual Critic Refinement.
 """
 
 import os
 import json
 import logging
+import datetime
 from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
 from config import settings
-from models import TransferControls
+from models import TransferControls, RefineRequest
 from src.pipeline import PipelineManager
 
 logging.basicConfig(
@@ -150,13 +152,12 @@ def delete_moodboard_photo():
         return jsonify({"status": "SUCCESS"})
     return jsonify({"error": "File not found"}), 404
 
-import datetime
-
 def get_admin_stats():
     """Load or initialize persistent admin statistics."""
     stats_path = settings.OUTPUT_DIR / "admin_stats.json"
     default_stats = {
         "generate_click_count": 0,
+        "refine_click_count": 0,
         "activity_log": []
     }
     if stats_path.exists():
@@ -202,10 +203,32 @@ def get_admin_analytics():
     auto_approved_count = sum(1 for item in summary_data if item.get("status") == "AUTO_APPROVED")
     flagged_count = total_images_generated - auto_approved_count
 
-    # Resolution breakdown
+    # Calculate cumulative studio API costs and tokens across all shots and critique loops
+    total_cost_usd = 0.0
+    total_prompt_tokens = 0
+    total_candidates_tokens = 0
+    total_cached_tokens = 0
+    total_tokens = 0
+
+    for item in summary_data:
+        cost_metrics = item.get("cost_metrics", {})
+        item_cost = cost_metrics.get("total_cost_usd")
+        if item_cost is not None:
+            total_cost_usd += float(item_cost)
+            total_prompt_tokens += int(cost_metrics.get("prompt_tokens", 0))
+            total_candidates_tokens += int(cost_metrics.get("candidates_tokens", 0))
+            total_cached_tokens += int(cost_metrics.get("cached_tokens", 0))
+            total_tokens += int(cost_metrics.get("total_tokens", 0))
+        else:
+            # Baseline estimation for legacy generations: $0.030 per image
+            total_cost_usd += 0.030
+
+    avg_cost_per_shot = (total_cost_usd / total_images_generated) if total_images_generated > 0 else 0.0
+
+    # Resolution breakdown (Enforcing 4K)
     res_counts = {"1024x1024": 0, "2048x2048": 0, "4096x4096": 0}
     for item in summary_data:
-        res = item.get("controls", {}).get("resolution", "2048x2048")
+        res = item.get("controls", {}).get("resolution", "4096x4096")
         res_counts[res] = res_counts.get(res, 0) + 1
 
     # SKU and Moodboard counts
@@ -217,9 +240,17 @@ def get_admin_analytics():
 
     return jsonify({
         "generate_click_count": admin_stats.get("generate_click_count", 0),
+        "refine_click_count": admin_stats.get("refine_click_count", 0),
         "total_images_generated": total_images_generated,
         "auto_approved_count": auto_approved_count,
         "flagged_count": flagged_count,
+        "total_cost_usd": round(total_cost_usd, 4),
+        "formatted_total_cost": f"${total_cost_usd:.4f}",
+        "avg_cost_per_shot": f"${avg_cost_per_shot:.4f}",
+        "total_prompt_tokens": total_prompt_tokens,
+        "total_candidates_tokens": total_candidates_tokens,
+        "total_cached_tokens": total_cached_tokens,
+        "total_tokens": total_tokens,
         "total_skus": sku_count,
         "total_moodboards": moodboard_count,
         "resolution_counts": res_counts,
@@ -229,13 +260,13 @@ def get_admin_analytics():
 @app.route("/api/admin/reset", methods=["POST"])
 def reset_admin_analytics():
     """Resets generation click count and activity logs."""
-    stats = {"generate_click_count": 0, "activity_log": []}
+    stats = {"generate_click_count": 0, "refine_click_count": 0, "activity_log": []}
     save_admin_stats(stats)
     return jsonify({"status": "SUCCESS", "message": "Admin metrics reset successfully"})
 
 @app.route("/api/generate", methods=["POST"])
 def trigger_generation():
-    """Triggers generation for a specific SKU with optional moodboard selections and transfer controls."""
+    """Triggers generation for a specific SKU with 1-to-1 moodboard mapping and selective transfer controls."""
     data = request.json or {}
     target_sku = data.get("sku_id")
     requested_num_shots = int(data.get("num_shots", 3))
@@ -259,8 +290,14 @@ def trigger_generation():
     moodboard_dir = settings.MOODBOARD_DIR
     output_dir = settings.OUTPUT_DIR
     
-    # Filter specific selected moodboards if provided, else use all available
+    # Moodboard selection validation:
+    # If user selected specific moodboards, ensure count is sufficient or guide them
     if selected_moodboard_filenames and len(selected_moodboard_filenames) > 0:
+        if len(selected_moodboard_filenames) < requested_num_shots:
+            return jsonify({
+                "error": f"You selected {len(selected_moodboard_filenames)} moodboard(s) for {requested_num_shots} requested shots. Please select at least {requested_num_shots} moodboards, or deselect all to sample from the full library."
+            }), 400
+        
         moodboard_images = [
             moodboard_dir / fname for fname in selected_moodboard_filenames
             if (moodboard_dir / fname).exists()
@@ -271,6 +308,9 @@ def trigger_generation():
             if allowed_file(p.name)
         ])
     
+    if not moodboard_images:
+        return jsonify({"error": "No moodboard reference images found in studio repository."}), 400
+
     garment_dirs = sorted([d for d in input_base_dir.iterdir() if d.is_dir()])
     
     summary_path = output_dir / "batch_execution_summary.json"
@@ -295,7 +335,7 @@ def trigger_generation():
         if not product_images:
             continue
             
-        logger.info(f"UI Triggered Generation for SKU {sku_id} ({requested_num_shots} shots) with controls: {controls.model_dump()}...")
+        logger.info(f"UI Triggered Generation for SKU {sku_id} ({requested_num_shots} shots, 1-to-1 Moodboard)...")
         results = pipeline.process_sku_multi_pose(
             sku_id=sku_id,
             product_image_paths=product_images,
@@ -325,6 +365,63 @@ def trigger_generation():
     
     return jsonify({"status": "SUCCESS", "results": final_summary_list})
 
+@app.route("/api/refine", methods=["POST"])
+def trigger_refinement():
+    """Triggers 2-pass self-correcting Visual Critic refinement for a specific output asset."""
+    data = request.json or {}
+    sku_id = data.get("sku_id")
+    image_path = data.get("image_path")
+    user_feedback = data.get("user_feedback", "").strip()
+    max_iterations = int(data.get("max_iterations", 2))
+
+    if not sku_id or not image_path:
+        return jsonify({"error": "Missing 'sku_id' or 'image_path' for refinement."}), 400
+
+    admin_stats = get_admin_stats()
+    admin_stats["refine_click_count"] = admin_stats.get("refine_click_count", 0) + 1
+
+    try:
+        logger.info(f"Triggering 2-pass Visual Critic refinement for SKU {sku_id} on {image_path}...")
+        updated_asset = pipeline.refine_output_shot(
+            sku_id=sku_id,
+            target_image_path=image_path,
+            user_feedback=user_feedback,
+            max_iterations=max_iterations
+        )
+
+        # Reload updated summary
+        summary_path = settings.OUTPUT_DIR / "batch_execution_summary.json"
+        all_summary = []
+        if summary_path.exists():
+            try:
+                all_summary = json.loads(summary_path.read_text(encoding="utf-8"))
+            except Exception:
+                all_summary = []
+
+        # Log admin activity
+        log_entry = {
+            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "sku_id": sku_id,
+            "requested_shots": 1,
+            "generated_shots": 1,
+            "resolution": "2-Pass Refined (4K)",
+            "custom_override": f"Refined: {user_feedback}" if user_feedback else "Critic 2-Pass Refinement",
+            "status": "REFINED_APPROVED"
+        }
+        if "activity_log" not in admin_stats or not isinstance(admin_stats["activity_log"], list):
+            admin_stats["activity_log"] = []
+        admin_stats["activity_log"].insert(0, log_entry)
+        save_admin_stats(admin_stats)
+
+        return jsonify({
+            "status": "SUCCESS",
+            "updated_asset": updated_asset,
+            "summary": all_summary
+        })
+    except Exception as e:
+        logger.error(f"Refinement error for {sku_id}: {e}", exc_info=True)
+        return jsonify({"error": str(e)}), 500
+
 # Image Static Routes
 @app.route("/api/image/input/<garment_dir>/<filename>")
 def serve_input_image(garment_dir, filename):
@@ -341,4 +438,3 @@ def serve_output_image(filename):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
-

@@ -1,22 +1,26 @@
 """
-Pass 1 Orchestrator: Uses Gemini 3.6 Flash to analyze product shots, group moodboard references, and plan multi-shot catalog visual payloads.
+Pass 1 Orchestrator: Uses Gemini 3.7 Flash to analyze product shots, group moodboard references,
+plan multi-shot catalog visual payloads, and track token usage.
 """
 
 import json
 import logging
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 from pathlib import Path
 from PIL import Image
 
 from config import settings
 from models import JSONPromptPayload, GarmentIdentitySpec, CompositionSpec, AestheticSpec, ShotPlanList, ShotPlan
 from src.vertex_client import get_genai_client
+from src.cost_tracker import calculate_step_cost
+
+from prompts import format_shot_planning_prompt, GARMENT_ANALYSIS_PROMPT
 
 logger = logging.getLogger(__name__)
 
 
 class PromptOrchestrator:
-    """Orchestrates payload indexing, moodboard shot planning, and structured JSON prompt generation using Gemini 3.6 Flash."""
+    """Orchestrates payload indexing, moodboard shot planning, and structured JSON prompt generation using Gemini 3.7 Flash."""
 
     def __init__(self, model_name: str = None):
         self.model_name = model_name or settings.ORCHESTRATOR_MODEL
@@ -36,7 +40,7 @@ class PromptOrchestrator:
         moodboard_image_paths: List[Path],
         requested_num_shots: int = 3
     ) -> List[ShotPlan]:
-        """Uses Gemini 3.6 Flash to analyze the moodboard library and intelligently plan N distinct catalog shots."""
+        """Uses Gemini 3.7 Flash to analyze the moodboard library and intelligently plan N distinct catalog shots."""
         logger.info(f"Using '{self.model_name}' to analyze moodboard and plan {requested_num_shots} distinct catalog shots...")
 
         moodboard_filenames = [m.name for m in moodboard_image_paths]
@@ -53,18 +57,7 @@ class PromptOrchestrator:
                 for i in range(requested_num_shots)
             ]
 
-        prompt = (
-            f"You are an AI Fashion Art Director.\n"
-            f"Available Moodboard Reference Images: {moodboard_filenames}\n\n"
-            f"TASK:\n"
-            f"Plan exactly {requested_num_shots} distinct catalog shots for a D2C apparel SKU.\n"
-            f"For each shot (1 to {requested_num_shots}):\n"
-            f"1. Select the best moodboard image for model pose (pose_source).\n"
-            f"2. Select a moodboard image for lighting/mood (lighting_source).\n"
-            f"3. Specify framing (e.g. full_body_catalog, 3_4_lifestyle, close_up_drape_detail).\n"
-            f"4. Provide a brief rationale for why this moodboard pairing creates visual variety.\n\n"
-            f"Return JSON matching the ShotPlanList schema."
-        )
+        prompt = format_shot_planning_prompt(moodboard_filenames, requested_num_shots)
 
         try:
             response = self.client.models.generate_content(
@@ -77,22 +70,27 @@ class PromptOrchestrator:
             )
             plan_data = json.loads(response.text)
             plan_list = ShotPlanList(**plan_data)
-            logger.info(f"Gemini 3.6 Flash planned {len(plan_list.shots)} catalog shots successfully.")
+            # Ensure pose_source and lighting_source match the 1-to-1 assigned moodboards if available
+            for idx, shot in enumerate(plan_list.shots):
+                if idx < len(moodboard_filenames):
+                    assigned_file = moodboard_filenames[idx]
+                    shot.pose_source = assigned_file
+                    shot.lighting_source = assigned_file
+            logger.info(f"Gemini 3.7 Flash planned {len(plan_list.shots)} catalog shots successfully (1-to-1 moodboard mapping).")
             return plan_list.shots
         except Exception as e:
             logger.warning(f"Shot planning fallback triggered ({e}). Generating fallback plan...")
             fallback_shots = []
             for i in range(requested_num_shots):
-                pose_file = moodboard_filenames[i % len(moodboard_filenames)]
-                light_file = moodboard_filenames[(i + 1) % len(moodboard_filenames)]
+                assigned_file = moodboard_filenames[i % len(moodboard_filenames)]
                 framing = "full_body_catalog" if i == 0 else ("3_4_lifestyle" if i == 1 else "close_up_fabric_drape")
                 fallback_shots.append(
                     ShotPlan(
                         shot_number=i + 1,
-                        pose_source=pose_file,
-                        lighting_source=light_file,
+                        pose_source=assigned_file,
+                        lighting_source=assigned_file,
                         framing=framing,
-                        rationale=f"Fallback rotation plan for shot {i + 1}"
+                        rationale=f"Single moodboard assignment ({assigned_file}) for shot {i + 1}"
                     )
                 )
             return fallback_shots
@@ -105,7 +103,7 @@ class PromptOrchestrator:
         sku_id: str = "SKU_001",
         controls: Optional[Any] = None
     ) -> JSONPromptPayload:
-        """Constructs structured JSONPromptPayload object using Gemini 3.6 Flash visual analysis and selective transfer controls."""
+        """Constructs structured JSONPromptPayload object using Gemini 3.7 Flash visual analysis and selective transfer controls."""
 
         anchor_img = self.select_fabric_anchor(product_image_paths)
         product_filenames = [p.name for p in product_image_paths]
@@ -113,20 +111,13 @@ class PromptOrchestrator:
         analysis_details = ""
         try:
             pil_images = [Image.open(p) for p in product_image_paths if p.exists()]
-            analysis_prompt = (
-                "Analyze these product shots of a D2C fashion garment.\n"
-                "Extract concisely:\n"
-                "1. Exact Garment Type & Ensemble Pieces (e.g. Saree with unstitched blouse, 3-piece Kurta set, or single dupata/kurta piece)\n"
-                "2. Exact Base Fabric Color Palette (e.g. Deep Emerald Green, Indigo Blue, Lilac)\n"
-                "3. Pattern & Weave Details (e.g. Bandhani tie-dye, Zari border motif, floral embroidery)\n"
-                "Provide a 2-sentence visual specification."
-            )
+            analysis_prompt = GARMENT_ANALYSIS_PROMPT
             response = self.client.models.generate_content(
                 model=self.model_name,
                 contents=[analysis_prompt] + pil_images[:2]
             )
             analysis_details = response.text.replace("\n", " ").strip()
-            logger.info(f"Gemini 3.6 Flash Visual Analysis for {sku_id}: {analysis_details[:150]}...")
+            logger.info(f"Gemini 3.7 Flash Visual Analysis for {sku_id}: {analysis_details[:150]}...")
         except Exception as e:
             logger.warning(f"Visual analysis query skipped: {e}")
 
@@ -140,7 +131,6 @@ class PromptOrchestrator:
             fidelity_rules.append(f"Visual Specs: {analysis_details[:200]}")
 
         # Process selective transfer controls
-        # Default choices when controls are None or 'auto'
         bg_source = "auto"
         pose_ctrl = "auto"
         model_ctrl = "auto"
@@ -155,26 +145,25 @@ class PromptOrchestrator:
             override_str = custom_override.strip()
             fidelity_rules.insert(0, f"HIGH-PRIORITY CREATIVE OVERRIDE (MUST FULFILL): {override_str}")
 
-        # Model rendering spec (Only add directive if non-auto)
-        model_spec = "natural_fashion_model_rendering"
+        model_spec = "natural_fashion_model_rendering | match_moodboard_subject_vertical_scale_and_canvas_occupancy"
         if model_ctrl == "input":
             model_spec = "match_human_model_appearance_from_input_photo"
         elif model_ctrl == "moodboard":
-            model_spec = "adopt_model_facial_features_and_hair_from_moodboard_reference"
+            model_spec = "adopt_model_facial_features_hair_and_scale_from_moodboard_reference"
 
-        # Pose spec (Only add directive if non-auto)
         pose_spec = shot_plan.pose_source
         if pose_ctrl == "input":
             pose_spec = "input_product_photo_pose"
         elif pose_ctrl == "moodboard":
             pose_spec = shot_plan.pose_source
 
-        # Background spec (Only add directive if non-auto)
-        bg_spec = "clean_fashion_studio_environment"
+        framing_spec = f"{shot_plan.framing} | preserve_moodboard_subject_proportions_and_distance (avoid oversized subject, maintain natural headroom & floor clearance)"
+
+        bg_spec = "replicate_authentic_fashion_studio_environment_from_moodboard"
         if bg_source == "input":
             bg_spec = "replicate_background_environment_from_input_photo"
         elif bg_source == "moodboard":
-            bg_spec = f"replicate_backdrop_and_lighting_from_{shot_plan.lighting_source}"
+            bg_spec = f"replicate_backdrop_architectural_set_and_lighting_from_{shot_plan.lighting_source}"
 
         if custom_override and custom_override.strip():
             bg_spec = f"{bg_spec} | OVERRIDE INSTRUCTION: {custom_override.strip()}"
@@ -189,7 +178,7 @@ class PromptOrchestrator:
             composition_spec=CompositionSpec(
                 pose_source=pose_spec,
                 lighting_source=shot_plan.lighting_source,
-                framing=shot_plan.framing,
+                framing=framing_spec,
                 camera_angle=shot_plan.camera_angle
             ),
             aesthetic=AestheticSpec(

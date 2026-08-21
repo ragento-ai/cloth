@@ -23,9 +23,10 @@ class Settings:
     GEMINI_API_KEY: str = field(default_factory=lambda: os.getenv("GEMINI_API_KEY", ""))
     
     # Model Configurations
-    ORCHESTRATOR_MODEL: str = field(default_factory=lambda: os.getenv("ORCHESTRATOR_MODEL", "gemini-3.6-flash"))
-    GENERATION_MODEL: str = field(default_factory=lambda: os.getenv("GENERATION_MODEL", "gemini-3-pro-image"))
-    INSPECTOR_MODEL: str = field(default_factory=lambda: os.getenv("INSPECTOR_MODEL", "gemini-3.6-flash"))
+    ORCHESTRATOR_MODEL: str = field(default_factory=lambda: os.getenv("ORCHESTRATOR_MODEL", "gemini-3.7-flash"))
+    GENERATION_MODEL: str = field(default_factory=lambda: os.getenv("GENERATION_MODEL", "gemini-3.1-flash-image"))
+    INSPECTOR_MODEL: str = field(default_factory=lambda: os.getenv("INSPECTOR_MODEL", "gemini-3.7-flash"))
+    CRITIC_MODEL: str = field(default_factory=lambda: os.getenv("CRITIC_MODEL", "gemini-3.7-flash"))
     
     # Quality Gate Thresholds
     MIN_PATTERN_FIDELITY: float = 0.88
@@ -34,7 +35,7 @@ class Settings:
     
     # Execution Settings
     MAX_RETRIES: int = 2
-    OUTPUT_RESOLUTION: str = "2048x2048"
+    OUTPUT_RESOLUTION: str = "4096x4096"
     
     # Directory Paths
     BASE_DIR: Path = field(default_factory=lambda: Path(__file__).resolve().parent)

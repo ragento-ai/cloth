@@ -89,7 +89,7 @@ cloth/
         ├── step2_3d_draped_<id>.png
         ├── step3_final_on_model_<id>.png
         └── qc_report_<id>.json
-```
+```when
 
 ---
 
